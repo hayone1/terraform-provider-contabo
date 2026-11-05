@@ -1,17 +1,80 @@
 ---
-page_title: "Provider: Contabo (hayone1 distribution)"
+page_title: "Provider: Contabo (fixed and extended edition)"
 subcategory: ""
 description: |-
-  An unofficial distribution of the Contabo Terraform provider. The distribution adds fixes and features that the official provider does not have yet.
+  Manage your whole Contabo account with Terraform or OpenTofu: servers, firewalls, DNS, reverse DNS, virtual IPs, object storage, users and roles. This provider adds 8 resources and 12 data sources and fixes the bugs of the official Contabo provider.
 ---
 
-# Contabo Provider (hayone1 distribution)
+# Contabo Provider: the fixed and extended edition
 
-This provider is an unofficial distribution of the Contabo Terraform provider. This distribution is not made by Contabo GmbH, and it is not connected to Contabo GmbH.
+Manage your whole Contabo account with Terraform or OpenTofu: servers, firewalls, DNS, reverse DNS, virtual IPs, object storage, users and roles. This provider starts from the [official Contabo provider](https://github.com/contabo/terraform-provider-contabo) and adds what the official provider is missing.
 
-The distribution starts from the [official provider](https://github.com/contabo/terraform-provider-contabo) and adds patches that Contabo has not merged yet. The file [PATCHES.md](https://github.com/hayone1/terraform-provider-contabo/blob/main/PATCHES.md) lists every patch. When Contabo merges a patch into the official provider, the distribution stops carrying its own copy of that patch.
+- **More of the Contabo API.** This provider has 8 resources and 12 data sources that the official provider does not have. With these resources and data sources, Terraform can run DNS for your domains, move a floating IP between servers, set up users with limited API access, and read your S3 keys.
+- **Bugs fixed that can cost you servers or data.** The official provider cannot read a firewall that protects a server, loses your cloud-init data when it reinstalls a server, and can crash during an apply. This provider fixes these bugs and many more.
+- **Safe with paid products.** A Contabo server costs money as soon as Terraform orders it. This provider saves a server in the Terraform state right after the order, so a failed apply does not lead to a second order. The provider can keep a server that you only want to stop managing, and the provider stops a plan early when the API cannot make a change.
+- **Tested against the real API.** The new and the fixed resources have unit tests that run Terraform against a fake Contabo API. The provider was also tested against a real Contabo account, including a move of existing state from the official provider without a single planned change.
+- **A drop-in replacement.** The resources use the same schema as the official provider. You change one line, run one command, and keep your existing Terraform state.
 
-The provider manages the products that [Contabo](https://contabo.com) offers. These products include Cloud VPS and VDS instances, firewalls, private networks, virtual IP addresses, DNS zones and records, reverse DNS records, object storage, custom images, snapshots, secrets, tags, roles and users. The provider needs the API credentials from the [Customer Control Panel](https://my.contabo.com/api/details) of your Contabo account.
+This provider is an unofficial distribution. The provider is not made by Contabo GmbH, and the provider is not connected to Contabo GmbH. Every change is also offered to Contabo as a pull request, and the file [PATCHES.md](https://github.com/hayone1/terraform-provider-contabo/blob/main/PATCHES.md) shows the status of each change.
+
+## Only in this provider
+
+### Resources
+
+| Resource | What you can do with the resource |
+|---|---|
+| `contabo_dns_zone` | Host the DNS zone of a domain on the Contabo name servers. |
+| `contabo_dns_record` | Manage `A`, `AAAA`, `CNAME`, `MX`, `TXT`, `SRV` and `CAA` records in a DNS zone. |
+| `contabo_ptr_record` | Set the reverse DNS name of an IPv4 or IPv6 address, which mail servers need. |
+| `contabo_vip_assignment` | Assign a floating or additional IP address to a server, and move the address to another server. |
+| `contabo_instance_reinstall` | Reinstall a server on purpose, for example after you attach a private network. |
+| `contabo_instance_vnc` | Set a strong password for the VNC console of a server. |
+| `contabo_role` | Create a role that allows only certain API calls, optionally only on resources with certain tags. |
+| `contabo_user` | Create a user with such a role, for example a user that can only change DNS records. |
+
+### Data sources
+
+| Data source | What you can read with the data source |
+|---|---|
+| `contabo_instances` | Search your servers by name, display name, product, region, status or tag. |
+| `contabo_dns_zone` | Read a DNS zone and its name servers. |
+| `contabo_ptr_record` | Read the reverse DNS name of an IP address. |
+| `contabo_vip` and `contabo_vips` | Find your floating and additional IP addresses, for example the addresses that no server uses yet. |
+| `contabo_object_storage_credentials` | Read the S3 access key and secret key, so that you never copy the keys by hand. |
+| `contabo_image_stats` | Check how much custom image storage is free before you upload an image. |
+| `contabo_instance_available_products` | List the products that a server can be upgraded to, with prices. |
+| `contabo_instance_vnc` | Read the VNC address and port of a server. |
+| `contabo_role`, `contabo_api_permissions` and `contabo_users` | Read roles, the API permissions that a role can grant, and the users of your account. |
+
+### New settings on existing resources
+
+| Resource | New setting | What the setting does |
+|---|---|---|
+| `contabo_instance` | `cancel_on_destroy` | Keeps the server running when Terraform destroys the resource. |
+| `contabo_instance` | `add_ons` | Orders add-ons with a new server, and adds private networking or backups to an existing server. |
+| `contabo_instance` | `timeouts` | Limits how long Terraform waits for a server to install. |
+| `contabo_firewall` | `display_name` on rules | Names firewall rules, as the Customer Control Panel does. |
+| `contabo_firewall` data source | `name` | Finds a firewall by its name. |
+
+## Bugs fixed
+
+| Problem in the official provider | Status in this provider |
+|---|---|
+| The provider cannot read, import or create a firewall that protects a server, because the API sends the list of servers in an unexpected format ([#52](https://github.com/contabo/terraform-provider-contabo/issues/52), [#56](https://github.com/contabo/terraform-provider-contabo/issues/56)). | Fixed. |
+| The provider crashes when a firewall rule has an empty `src_cidr` block ([#56](https://github.com/contabo/terraform-provider-contabo/issues/56)). | Fixed. |
+| A reinstall after an image change loses the `user_data` value ([#49](https://github.com/contabo/terraform-provider-contabo/issues/49)). | Fixed. |
+| A reinstall resets the `default_user` value to `admin` ([#45](https://github.com/contabo/terraform-provider-contabo/issues/45)). | Fixed. |
+| A change of `product_id` does nothing, and the provider still reports success ([#56](https://github.com/contabo/terraform-provider-contabo/issues/56)). | The plan now stops with a clear error. |
+| A server adopted with `existing_instance_id` cannot be destroyed ([#38](https://github.com/contabo/terraform-provider-contabo/issues/38)). | Fixed, and `cancel_on_destroy = false` keeps the server. |
+| An apply can leave paid servers that Terraform does not know about ([#36](https://github.com/contabo/terraform-provider-contabo/issues/36)). | The provider saves the server id right after the order, and the provider warns about unexpected new servers. |
+| An imported object storage shows a change in every plan ([#34](https://github.com/contabo/terraform-provider-contabo/issues/34)). | Fixed. |
+| There is no way to list servers ([#54](https://github.com/contabo/terraform-provider-contabo/issues/54)). | The `contabo_instances` data source lists servers. |
+| The provider cannot be built from the current API specification. | Fixed. |
+| Errors from server updates and reinstalls are hidden, and the apply reports success. | Errors are reported. |
+| A resource that someone deleted outside of Terraform breaks every plan. | Terraform plans to create the resource again. |
+| Two provider configurations for two Contabo accounts share one login token. | Each account gets its own token, and long applies log in again when the token expires. |
+
+The file [CHANGELOG.md](https://github.com/hayone1/terraform-provider-contabo/blob/main/CHANGELOG.md) lists every change, and the file [PATCHES.md](https://github.com/hayone1/terraform-provider-contabo/blob/main/PATCHES.md) links each change to its pull request for the official provider.
 
 ~> **Warning about costs:** When Terraform creates a `contabo_instance` resource or a `contabo_object_storage` resource, Contabo orders the product and starts to bill you for the product. When Terraform destroys one of these resources, Contabo cancels the product at the end of the contract period.
 
