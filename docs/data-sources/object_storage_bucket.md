@@ -43,10 +43,10 @@ output "my_test_bucket" {
 ### Optional
 
 - `name` (String) The name of your bucket, consider the naming restriction https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-s3-bucket-naming-requirements.html.
-- `public_sharing` (Boolean) Choose the access to your bucket. You can not share it at all or share it publicly.
+- `public_sharing` (Boolean) Whether the bucket is shared publicly. The data source reads the value from the bucket policy. A value in the configuration is ignored; the setting only stays optional for compatibility.
 
 ### Read-Only
 
 - `creation_date` (String) The creation date of the bucket.
 - `id` (String) The ID of this resource.
-- `public_sharing_link` (String) If your bucket is publicly shared, you can access it with this link.
+- `public_sharing_link` (String) The public address of the bucket, `<s3 url>/<s3 tenant id>:<bucket>`. The value is empty when the bucket is not shared publicly.

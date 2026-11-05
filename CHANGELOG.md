@@ -14,6 +14,12 @@ This release is based on version `v0.1.44` of the official provider. This releas
 
 - `contabo_kubernetes_oidc_documents` computes the discovery document and the key set (JWKS) of a Kubernetes service account issuer from the service account key. The documents are identical to the documents that kube-apiserver serves, so you can publish them before the cluster exists. The data source does not call the Contabo API.
 
+### Fixes
+
+- The `contabo_object_storage_bucket` data source failed on every read with the error `Invalid address to set: []string{"id"}`. The data source now works.
+- The `contabo_object_storage_bucket` data source now reads `public_sharing` and `public_sharing_link` from the bucket. Earlier versions returned the value from the configuration and an empty link. A value for `public_sharing` in the configuration is now ignored.
+- The `contabo_object_storage_bucket` data source now reports an error when the bucket does not exist.
+
 ### Things to know
 
 - Contabo serves public buckets through a cache. An object without a `Cache-Control` header can stay in that cache for a long time after a change, and you cannot empty the cache. A test on 2026-11-05 showed that the cache respects `Cache-Control: public, max-age=60`. Set `cache_control` on every public object that you plan to change.
