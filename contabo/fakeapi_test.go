@@ -226,7 +226,7 @@ func (f *fakeAPI) addInstance(overrides map[string]interface{}) int64 {
 		"macAddress": "00:50:56:00:00:01", "ramMb": 8192, "cpuCores": 4, "osType": "Linux",
 		"diskMb": 102400, "sshKeys": []interface{}{}, "createdDate": time.Now().UTC().Format(time.RFC3339),
 		"cancelDate": nil, "status": "running", "vHostId": 1, "vHostNumber": 1, "vHostName": "host",
-		"addOns": []interface{}{map[string]interface{}{"id": 1501, "quantity": 1}},
+		"addOns":       []interface{}{map[string]interface{}{"id": 1501, "quantity": 1}},
 		"errorMessage": nil, "productType": "ssd", "productName": "Cloud VPS 4",
 		"defaultUser": "admin", "applicationId": nil,
 	}
@@ -523,7 +523,7 @@ func (f *fakeAPI) firewallRoutes() {
 			"name": body["name"], "description": body["description"], "status": body["status"],
 			"rules":       normalizeFakeRules(rules),
 			"createdDate": time.Now().UTC().Format(time.RFC3339), "updatedDate": time.Now().UTC().Format(time.RFC3339),
-			"_instances":  []int64{},
+			"_instances": []int64{},
 		}
 		f.firewalls[id] = firewall
 		out := f.firewallJSON(firewall)

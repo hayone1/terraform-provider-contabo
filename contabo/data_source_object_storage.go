@@ -16,7 +16,7 @@ func dataSourceObjectStorage() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Optional: true,
+				Optional:    true,
 				Description: "The identifier of the Object Storage. Use it to manage it!",
 			},
 			"created_date": {
@@ -46,26 +46,26 @@ func dataSourceObjectStorage() *schema.Resource {
 			},
 			"auto_scaling": {
 				Type:     schema.TypeList,
-				Computed:    true,
+				Computed: true,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"state": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Optional: true,
+							Optional:    true,
 							Description: "Status of this object storage.  It can be set to `enabled`, `disabled` or `error`.",
 						},
 						"size_limit_tb": {
 							Type:        schema.TypeFloat,
 							Computed:    true,
-							Optional: true,
+							Optional:    true,
 							Description: "Autoscaling size limit for the current object storage.",
 						},
 						"error_message": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Optional: true,
+							Optional:    true,
 							Description: "If the autoscaling is in an error state (see status property), the error message can be seen in this field.",
 						},
 					},
@@ -121,14 +121,14 @@ func dataSourceObjectStorageRead(
 		return HandleMissingDataObjectsFilters(diags, "Missing required field", "You must provide either the `id` or `display_name` field.")
 	} else if objectStorageId != "" && objectStorageDisplayName != "" {
 		return HandleMissingDataObjectsFilters(diags, "Multiple filters provided", "You must provide only one of the following fields: `id` or `display_name`.")
-	} else if (objectStorageId != "") {
+	} else if objectStorageId != "" {
 		res, httpResp, err := client.ObjectStoragesApi.RetrieveObjectStorage(ctx, objectStorageId).XRequestId(uuid.NewV4().String()).Execute()
 
 		if err != nil {
 			return HandleResponseErrors(diags, httpResp)
 		}
 
-		if(len(res.Data) == 0) {
+		if len(res.Data) == 0 {
 			return NoDataError(diags)
 		}
 
@@ -138,16 +138,16 @@ func dataSourceObjectStorageRead(
 			d,
 			diags,
 		)
-	} else if (objectStorageDisplayName != "") {
+	} else if objectStorageDisplayName != "" {
 		res, httpResp, err := client.ObjectStoragesApi.RetrieveObjectStorageList(ctx).XRequestId(uuid.NewV4().String()).DisplayName(objectStorageDisplayName).Execute()
 
 		if err != nil {
 			return HandleResponseErrors(diags, httpResp)
 		}
 
-		if(len(res.Data) == 0) {
+		if len(res.Data) == 0 {
 			return NoDataError(diags)
-		} else if(len(res.Data) > 1) {
+		} else if len(res.Data) > 1 {
 			return MultipleDataObjectsError(diags)
 		}
 

@@ -571,7 +571,6 @@ func generateBucketId(objectStorageId string, bucketName string) string {
 	return objectStorageId + "/" + bucketName
 }
 
-
 func getBucketNameFromId(bucketId string) string {
 	bucketName := strings.Split(bucketId, "/")
 	return bucketName[1]
@@ -583,14 +582,14 @@ func getObjectStorageIdFromId(bucketId string) string {
 }
 
 func checkIfBucketNameChanged(diags diag.Diagnostics, bucketName string, fileResourceBucketName string) diag.Diagnostics {
-	if(bucketName != fileResourceBucketName) {
+	if bucketName != fileResourceBucketName {
 		return diag.FromErr(errors.New("it is not possible to update the bucket name, please create instead a new bucket"))
 	}
 	return diags
 }
 
 func checkIfObjectStorageIdChanged(diags diag.Diagnostics, bucketName string, fileResourceBucketName string) diag.Diagnostics {
-	if(bucketName != fileResourceBucketName) {
+	if bucketName != fileResourceBucketName {
 		return diag.FromErr(errors.New("it is not possible to update the object storage id"))
 	}
 	return diags

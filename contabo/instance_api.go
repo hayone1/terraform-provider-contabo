@@ -33,26 +33,26 @@ type instanceResponse struct {
 		V4 instanceIp `json:"v4"`
 		V6 instanceIp `json:"v6"`
 	} `json:"ipConfig"`
-	MacAddress    string                `json:"macAddress"`
-	RamMb         float64               `json:"ramMb"`
-	CpuCores      int64                 `json:"cpuCores"`
-	OsType        string                `json:"osType"`
-	DiskMb        float64               `json:"diskMb"`
-	SshKeys       []int64               `json:"sshKeys"`
-	CreatedDate   time.Time             `json:"createdDate"`
-	CancelDate    *string               `json:"cancelDate"`
-	Status        string                `json:"status"`
-	VHostId       int64                 `json:"vHostId"`
-	VHostNumber   int64                 `json:"vHostNumber"`
-	VHostName     string                `json:"vHostName"`
-	AddOns        []instanceAddOn       `json:"addOns"`
-	ErrorMessage  *string               `json:"errorMessage"`
-	ProductType   string                `json:"productType"`
-	ProductName   string                `json:"productName"`
-	DefaultUser   *string               `json:"defaultUser"`
-	ApplicationId *string               `json:"applicationId"`
-	GpuVendor     *string               `json:"gpuVendor"`
-	GpuModel      *string               `json:"gpuModel"`
+	MacAddress    string          `json:"macAddress"`
+	RamMb         float64         `json:"ramMb"`
+	CpuCores      int64           `json:"cpuCores"`
+	OsType        string          `json:"osType"`
+	DiskMb        float64         `json:"diskMb"`
+	SshKeys       []int64         `json:"sshKeys"`
+	CreatedDate   time.Time       `json:"createdDate"`
+	CancelDate    *string         `json:"cancelDate"`
+	Status        string          `json:"status"`
+	VHostId       int64           `json:"vHostId"`
+	VHostNumber   int64           `json:"vHostNumber"`
+	VHostName     string          `json:"vHostName"`
+	AddOns        []instanceAddOn `json:"addOns"`
+	ErrorMessage  *string         `json:"errorMessage"`
+	ProductType   string          `json:"productType"`
+	ProductName   string          `json:"productName"`
+	DefaultUser   *string         `json:"defaultUser"`
+	ApplicationId *string         `json:"applicationId"`
+	GpuVendor     *string         `json:"gpuVendor"`
+	GpuModel      *string         `json:"gpuModel"`
 }
 
 type instanceIp struct {
