@@ -2,6 +2,13 @@
 
 This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
+## v0.2.1 (2026-11-05)
+
+This release is based on version `v0.1.44` of the official provider. This release only changes the documentation. The provider code is the same as in `v0.2.0`.
+
+- The README and the provider page on the registry now explain what this provider adds: the resources and data sources that the official provider does not have, the bugs that this provider fixes, and how this provider handles paid products.
+- The new file RELEASING.md explains how to publish a release.
+
 ## v0.2.0 (2026-11-05)
 
 This release is based on version `v0.1.44` of the official provider. This release is the first release of the distribution.
