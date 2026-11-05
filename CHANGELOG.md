@@ -2,7 +2,7 @@
 
 This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
-## v0.2.0 (not released yet)
+## v0.2.0 (2026-11-05)
 
 This release is based on version `v0.1.44` of the official provider. This release is the first release of the distribution.
 
