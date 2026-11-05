@@ -70,6 +70,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"contabo_instance":              dataSourceInstance(),
+			"contabo_instances":             dataSourceInstances(),
 			"contabo_instance_snapshot":     dataSourceSnapshot(),
 			"contabo_image":                 dataSourceImage(),
 			"contabo_object_storage":        dataSourceObjectStorage(),
