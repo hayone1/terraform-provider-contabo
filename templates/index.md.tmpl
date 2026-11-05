@@ -31,6 +31,7 @@ This provider is an unofficial distribution. The provider is not made by Contabo
 | `contabo_instance_vnc` | Set a strong password for the VNC console of a server. |
 | `contabo_role` | Create a role that allows only certain API calls, optionally only on resources with certain tags. |
 | `contabo_user` | Create a user with such a role, for example a user that can only change DNS records. |
+| `contabo_object_storage_object` | Upload a small file, such as a JSON document, into a bucket. The provider uses the S3 keys of its API user, so you need no S3 provider. |
 
 ### Data sources
 
@@ -45,6 +46,7 @@ This provider is an unofficial distribution. The provider is not made by Contabo
 | `contabo_instance_available_products` | List the products that a server can be upgraded to, with prices. |
 | `contabo_instance_vnc` | Read the VNC address and port of a server. |
 | `contabo_role`, `contabo_api_permissions` and `contabo_users` | Read roles, the API permissions that a role can grant, and the users of your account. |
+| `contabo_kubernetes_oidc_documents` | Compute the discovery document and the key set of a Kubernetes service account issuer, so that you can publish them in a public bucket for workload identity. |
 
 ### New settings on existing resources
 

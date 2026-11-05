@@ -2,6 +2,22 @@
 
 This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
+## v0.3.0 (2026-11-05)
+
+This release is based on version `v0.1.44` of the official provider. This release adds what a Kubernetes cluster on Contabo needs for workload identity: a public bucket can now act as the service account issuer of the cluster.
+
+### New resources
+
+- `contabo_object_storage_object` uploads a small object, such as a JSON document, into a bucket. The provider reads the S3 keys of its API user from the Contabo API, so you do not need the `aws` or `minio` provider. The resource sets `Content-Type` and `Cache-Control`, finds changes that someone makes outside of Terraform, and supports import with the id `<object_storage_id>/<bucket>/<key>`.
+
+### New data sources
+
+- `contabo_kubernetes_oidc_documents` computes the discovery document and the key set (JWKS) of a Kubernetes service account issuer from the service account key. The documents are identical to the documents that kube-apiserver serves, so you can publish them before the cluster exists. The data source does not call the Contabo API.
+
+### Things to know
+
+- Contabo serves public buckets through a cache. An object without a `Cache-Control` header can stay in that cache for a long time after a change, and you cannot empty the cache. A test on 2026-11-05 showed that the cache respects `Cache-Control: public, max-age=60`. Set `cache_control` on every public object that you plan to change.
+
 ## v0.2.1 (2026-11-05)
 
 This release is based on version `v0.1.44` of the official provider. This release only changes the documentation. The provider code is the same as in `v0.2.0`.

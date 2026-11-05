@@ -39,6 +39,8 @@ The pull requests #60 to #64 in the official repository come from the contrib fo
 | 22 | The patch keeps one login token per account, renews the token during long runs, shows better API error messages, and reads the user id from the token. | `709a3f6` | [PR #60](https://github.com/contabo/terraform-provider-contabo/pull/60) | carried | v0.2.0 |
 | 23 | The patch removes resources from the state when someone deleted them outside of Terraform, and waits for image downloads with a time limit. | `62d685a` | [PR #63](https://github.com/contabo/terraform-provider-contabo/pull/63) | carried | v0.2.0 |
 | 24 | The patch updates terraform-plugin-sdk to version 2.40, sets up the release pipeline for `hayone1/contabo`, adds continuous integration, and adds unit tests against a fake API. | `a9cf95f`, `71fbcc9` | None. This patch only exists in the distribution. | carried | v0.2.0 |
+| 25 | The patch adds the `contabo_object_storage_object` resource, which uploads a small object into a bucket with the S3 keys of the provider's API user. The resource can set the `Cache-Control` header, which matters because Contabo serves public buckets through a cache. | `patch/object-storage-object` | None yet. | carried | v0.3.0 |
+| 26 | The patch adds the `contabo_kubernetes_oidc_documents` data source. The data source computes the OpenID Connect discovery document and the key set of a Kubernetes service account issuer from the service account key, the same way kube-apiserver does. | `patch/object-storage-object` | None. The data source does not call the Contabo API, so the patch only exists in the distribution. | carried | v0.3.0 |
 
 ## How to update the distribution from the official provider
 
