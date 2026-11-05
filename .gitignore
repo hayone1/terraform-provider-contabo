@@ -13,3 +13,7 @@ __debug_bin
 *.env
 build/
 dist/
+
+# GPG signing key material for releases (never commit)
+.gpg/
+*.asc
