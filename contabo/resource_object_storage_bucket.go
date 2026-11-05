@@ -205,13 +205,14 @@ func getObjectStorage(diags diag.Diagnostics, client *openapi.APIClient, objectS
 		return HandleResponseErrors(diags, httpResp), openapi.ObjectStorageResponse{}
 	}
 	if len(objectStorageRetrieveResponse.Data) == 0 {
-		return diag.FromErr(errors.New("No Object Storage could be found with id : " + objectStorageId)), objectStorageRetrieveResponse.Data[0]
+		return diag.FromErr(errors.New("No Object Storage could be found with id : " + objectStorageId)), openapi.ObjectStorageResponse{}
 
 	}
 	return diags, objectStorageRetrieveResponse.Data[0]
 }
 
 func getCredentials(diags diag.Diagnostics, client *openapi.APIClient, objectStorageIdOfBucket string) (diag.Diagnostics, S3Credentials) {
+	userId := providerUserId(client)
 	retrieveCredentialResponse, httpResp, err := client.UsersObjectStorageCredentialsApi.
 		ListObjectStorageCredentials(context.Background(), userId).
 		XRequestId(uuid.NewV4().String()).
