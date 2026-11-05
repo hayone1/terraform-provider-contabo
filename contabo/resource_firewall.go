@@ -471,7 +471,26 @@ func flattenFirewallInstancesStatus(statuses []firewallInstanceStatus) []interfa
 	return out
 }
 
+// implicitBlockAllDisplayName names the rule the API appends to every
+// firewall: drop everything that no earlier rule accepted.
+const implicitBlockAllDisplayName = "Block all traffic"
+
+// isImplicitBlockAllRule reports whether the rule is the drop-all rule the
+// API appends. The provider hides it, because it is not part of the
+// configuration and the API adds it again after every change.
+func isImplicitBlockAllRule(rule firewallRule) bool {
+	return rule.DisplayName == implicitBlockAllDisplayName &&
+		strings.EqualFold(rule.Action, "drop") &&
+		rule.Protocol == "" &&
+		len(rule.DestPorts) == 0 &&
+		len(rule.SrcCidr.Ipv4) == 0 &&
+		len(rule.SrcCidr.Ipv6) == 0
+}
+
 func flattenFirewallRules(inbound []firewallRule) []interface{} {
+	if n := len(inbound); n > 0 && isImplicitBlockAllRule(inbound[n-1]) {
+		inbound = inbound[:n-1]
+	}
 	rules := make([]interface{}, 0, len(inbound))
 	for _, rule := range inbound {
 		cidr := map[string]interface{}{

@@ -638,8 +638,9 @@ func normalizeFakeRules(rules map[string]interface{}) map[string]interface{} {
 	out := []interface{}{}
 	for _, item := range inbound {
 		rule := copyMap(item.(map[string]interface{}))
-		if _, ok := rule["displayName"]; !ok {
-			rule["displayName"] = ""
+		if _, ok := rule["displayName"]; !ok || rule["displayName"] == "" {
+			// The real API returns null for rules without a name.
+			rule["displayName"] = nil
 		}
 		if cidr, ok := rule["srcCidr"].(map[string]interface{}); ok {
 			cidr = copyMap(cidr)
@@ -652,5 +653,10 @@ func normalizeFakeRules(rules map[string]interface{}) map[string]interface{} {
 		}
 		out = append(out, rule)
 	}
+	// Like the real API, append the drop-all rule.
+	out = append(out, map[string]interface{}{
+		"protocol": "", "destPorts": []interface{}{}, "srcCidr": map[string]interface{}{"ipv4": []interface{}{}, "ipv6": []interface{}{}},
+		"action": "drop", "status": "active", "displayName": "Block all traffic",
+	})
 	return map[string]interface{}{"inbound": out}
 }
