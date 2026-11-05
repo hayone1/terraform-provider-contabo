@@ -24,13 +24,13 @@ provider "contabo" {
 # Create a new object storage
 resource "contabo_object_storage" "example_object_storage" {
   region                   = "EU"
-	total_purchased_space_tb = 0.500
+  total_purchased_space_tb = 0.500
 }
 
 # create a bucket in the object_storage
 resource "contabo_object_storage_bucket" "example_bucket" {
-  name                = "example_bucket"
-  object_storage_id   = contabo_object_storage.example_object_storage.id
+  name              = "example_bucket"
+  object_storage_id = contabo_object_storage.example_object_storage.id
 }
 ```
 
@@ -55,6 +55,8 @@ resource "contabo_object_storage_bucket" "example_bucket" {
 ## Import
 
 Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 ```shell
 # Object Storage buckets can be imported using the object storage id and the bucket name separated by a slash

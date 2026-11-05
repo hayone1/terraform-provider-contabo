@@ -23,9 +23,9 @@ provider "contabo" {
 
 # Create a new private network
 resource "contabo_private_network" "databasePrivateNetwork" {
-  name        = "terraform-test-private-network"
-	description = "terraform test private network"
-	region 		   = "EU"
+  name         = "terraform-test-private-network"
+  description  = "terraform test private network"
+  region       = "EU"
   instance_ids = [42, 1000]
 }
 

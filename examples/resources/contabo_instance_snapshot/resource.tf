@@ -9,12 +9,12 @@ provider "contabo" {
 # Create a new snapshot
 resource "contabo_instance_snapshot" "snapshotInstance42" {
   name        = "snapshot-of-instance"
-	description = "snapshot of the instance with id 42"
-	instance_id = 42
+  description = "snapshot of the instance with id 42"
+  instance_id = 42
 }
 
 # Update an existing snapshot
 resource "contabo_instance_snapshot" "snapshotInstance42" {
-	description = "terraform test-snapshot"
+  description = "terraform test-snapshot"
 }
 

@@ -9,7 +9,7 @@ provider "contabo" {
 # Create a new object storage in region EU
 resource "contabo_object_storage" "object_storage_eu" {
   region                   = "EU"
-	total_purchased_space_tb = 2
+  total_purchased_space_tb = 2
 }
 
 # Update a new object storage, enable autoscaling

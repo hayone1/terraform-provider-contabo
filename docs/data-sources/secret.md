@@ -28,7 +28,7 @@ data "contabo_secret" "mysecret" {
 
 output "my_secret_output" {
   description = "my secret"
-  value = data.contabo_secret.mysecret
+  value       = data.contabo_secret.mysecret
 }
 ```
 

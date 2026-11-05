@@ -3,35 +3,39 @@
 page_title: "contabo_instance Resource - contabo"
 subcategory: ""
 description: |-
-  The Compute Management API allows you to manage compute resources (e.g. creation, deletion, starting, stopping) as well as managing snapshots and custom images. It also supports cloud-init https://cloud-init.io/ at least on our default images (for custom images you will need to provide cloud-init support packages). The API offers providing cloud-init scripts via the user_data field. Custom images must be provided in .qcow2 or .iso format.
+  Manages a compute instance (VPS or VDS). Creating an instance orders it and starts billing; destroying it cancels it at the end of the contract period, unless cancel_on_destroy is false. It also supports cloud-init https://cloud-init.io/ at least on the default images (custom images need cloud-init support packages) through the user_data field.
 ---
 
 # contabo_instance (Resource)
 
-The Compute Management API allows you to manage compute resources (e.g. creation, deletion, starting, stopping) as well as managing snapshots and custom images. It also supports [cloud-init](https://cloud-init.io/) at least on our default images (for custom images you will need to provide cloud-init support packages). The API offers providing cloud-init scripts via the user_data field. Custom images must be provided in .qcow2 or .iso format.
+Manages a compute instance (VPS or VDS). Creating an instance orders it and starts billing; destroying it cancels it at the end of the contract period, unless `cancel_on_destroy` is false. It also supports [cloud-init](https://cloud-init.io/) at least on the default images (custom images need cloud-init support packages) through the `user_data` field.
 
 ## Example Usage
 
 ```terraform
-# Configure your Contabo API credentials
-provider "contabo" {
-  oauth2_client_id     = "[your client id]"
-  oauth2_client_secret = "[your client secret]"
-  oauth2_user          = "[your username]"
-  oauth2_pass          = "[your password]"
+# Order a Cloud VPS in the EU region with a 3 month contract, private
+# networking and cloud-init.
+resource "contabo_instance" "database" {
+  display_name = "database"
+  product_id   = "V153"
+  region       = "EU"
+  period       = 3
+  image_id     = data.contabo_image.ubuntu.id
+  default_user = "root"
+  ssh_keys     = [contabo_secret.ssh_key.id]
+  user_data    = file("${path.module}/cloud-init.yaml")
+
+  add_ons {
+    id = "1477" # private networking
+  }
 }
 
-# Create a new compute instance (vps/vds) in region EU, with specs of the V76 product. Also it has a contract period of 3 month
-resource "contabo_instance" "database_instance" {
-  display_name  = "database"
-  product_id    = "V153"
-  region        = "EU"
-  period        = 3 
-}
-
-# Update custom image on instance
-resource "contabo_instance" "database_instance" {
-  image_id = contabo_image.custom_image_alpine.id
+# Manage an instance that was ordered in the customer control panel without
+# reinstalling it, and keep it when the resource is destroyed.
+resource "contabo_instance" "existing" {
+  existing_instance_id = "203235629"
+  display_name         = "legacy"
+  cancel_on_destroy    = false
 }
 ```
 
@@ -40,36 +44,42 @@ resource "contabo_instance" "database_instance" {
 
 ### Optional
 
-- `add_ons` (Block List) (see [below for nested schema](#nestedblock--add_ons))
-- `cancel_date` (String) The date on which the instance will be cancelled.
-- `default_user` (String) Default user name created for login during (re-)installation with administrative privileges. Allowed values for Linux/BSD are admin (use sudo to apply administrative privileges like root) or root. Allowed values for Windows are admin (has administrative privileges like administrator) or administrator.
+- `add_ons` (Block List) Add-ons of the instance. On create, every listed add-on is ordered with the instance. On existing instances, adding private networking (`1477`) or automated backup (`2214`) orders it through the upgrade API; other add-ons can only be ordered with the instance or in the customer control panel, and removing add-ons has no effect. When set, the state lists only the configured add-ons; the `contabo_instance` data source lists all of them. (see [below for nested schema](#nestedblock--add_ons))
+- `application_id` (String) CAUTION: On updating this value your server will be reinstalled! Id of an application to install with the image.
+- `cancel_date` (String) The date on which the instance will be cancelled. Read only in practice: setting it has no effect.
+- `cancel_on_destroy` (Boolean) Whether destroying the resource cancels the instance. When false, destroy only removes the instance from the Terraform state and the instance keeps running and billing. Defaults to `true`.
+- `default_user` (String) CAUTION: On updating this value your server will be reinstalled! Default user name created for login during (re-)installation with administrative privileges. Allowed values for Linux/BSD are admin (use sudo to apply administrative privileges like root) or root. Allowed values for Windows are admin (has administrative privileges like administrator) or administrator.
 - `display_name` (String) The instance name chosen by the customer that will be shown in the customer panel.
-- `existing_instance_id` (String) The identifier of the existing compute instance. (override id)
-- `image_id` (String) CAUTION: On updating this value your server will be reinstalled! Image Id is used to set up the compute instance. Ubuntu 20.04 is the default, currently you have to get the Id with our [API](https://api.contabo.com/#tag/Images/operation/retrieveImage) or via our [command line](https://github.com/contabo/cntb) tool with this command: `cntb get images`.
-- `license` (String) Additional license in order to enhance your chosen product. It is mainly needed for software licenses on your product (not needed for windows). See our [api documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for all available licenses.
-- `period` (Number) Initial contract period in months. Available periods are: 1, 3, 6 and 12 months. The default setting is 1 month.
-- `product_id` (String) Choose the VPS/VDS product you want to buy. See our products [here](https://api.contabo.com/#tag/Instances/operation/createInstance).
-- `region` (String) Instance Region where the compute instance should be located. Default region is the EU. Following regions are available: `EU`,`US-central`,`US-east`,`US-west`,`SIN`.
-- `root_password` (Number) CAUTION: On updating this value your server will be reinstalled! Root password of the compute instance.
+- `existing_instance_id` (String) Id of an existing instance to manage instead of ordering a new one. The provider adopts the instance as it is: it applies `display_name` and add-ons but does not reinstall it on create. Changes to reinstall attributes on later applies reinstall it as usual. Consider `terraform import` instead, and set `cancel_on_destroy = false` if destroying the resource should not cancel the instance.
+- `image_id` (String) CAUTION: On updating this value your server will be reinstalled! Image Id is used to set up the compute instance. Defaults to the API's default image. Find image ids with the `contabo_image` data source, the [API](https://api.contabo.com/#tag/Images/operation/retrieveImage) or `cntb get images`.
+- `license` (String) Additional license in order to enhance your chosen product. It is mainly needed for software licenses on your product (not needed for windows). See our [api documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for all available licenses. Only used on create.
+- `period` (Number) Initial contract period in months, for example 1, 3, 6 or 12. The default setting is 1 month. Only used on create.
+- `product_id` (String) Product of the instance, for example `V153`. See the [API documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for current products. Cannot be changed through the API after creation: upgrade in the customer control panel, then set the new product id.
+- `region` (String) Region of the instance, for example `EU`, `UK`, `US-central`, `US-east`, `US-west`, `SIN`, `AUS`, `JPN` or `IND`. Defaults to `EU`. Cannot be changed after creation.
+- `root_password` (Number) CAUTION: On updating this value your server will be reinstalled! Secret id of the root password of the compute instance.
 - `ssh_keys` (List of Number) CAUTION: On updating this value your server will be reinstalled! Array of `secretIds` of public SSH keys for logging into as defaultUser with administrator/root privileges. Applies to Linux/BSD systems. Please refer to Secrets Management API.
-- `user_data` (String) CAUTION: On updating this value your server will be reinstalled! Cloud-Init Config in order to customize during start of compute instance.
+- `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
+- `user_data` (String) CAUTION: On updating this value your server will be reinstalled! Cloud-Init Config in order to customize during start of compute instance. The API does not return it, so changes made outside Terraform are not detected.
 
 ### Read-Only
 
 - `additional_ips` (List of Object) All other additional IP addresses of the instance. (see [below for nested schema](#nestedatt--additional_ips))
 - `cpu_cores` (Number) CPU core count of the instance.
 - `created_date` (String) The creation date of the compute instance.
+- `data_center` (String) Data center of the instance.
 - `disk_mb` (Number) Image disk size of the instance in megabyte.
 - `error_message` (String) If the instance is in an error state (see status property), the error message can be seen in this field.
 - `id` (String) The identifier of the compute instance. Use it to manage it!
-- `ip_config` (List of Object) (see [below for nested schema](#nestedatt--ip_config))
+- `ip_config` (List of Object) Primary IPv4 and IPv6 configuration of the instance. (see [below for nested schema](#nestedatt--ip_config))
 - `last_updated` (String) Time of the last update of the compute instance.
 - `mac_address` (String) Mac address of the instance.
 - `name` (String) Name of the compute instance.
 - `os_type` (String) Type of operating system (OS) installed on the instance.
-- `product_type` (String) InsInstance's category depending on Product Id. Following product types are available: `hdd`,`ssd`,`vds`,`nvme`.
+- `product_name` (String) Name of the product.
+- `product_type` (String) Instance's category depending on Product Id, for example `ssd`, `nvme` or `vds`.
 - `ram_mb` (Number) Image ram size in megabyte.
-- `status` (String) Status of the compute instance. The status can be set to `provisioning`, `uninstalled`, `running`, `stopped`, `error`, `installing`, `unknown`, or `installed`.
+- `region_name` (String) Name of the region.
+- `status` (String) Status of the compute instance, for example `provisioning`, `installing`, `running`, `stopped`, `error` or `uninstalled`.
 - `v_host_id` (Number) Identifier of the host system.
 
 <a id="nestedblock--add_ons"></a>
@@ -79,6 +89,16 @@ Optional:
 
 - `id` (String) Id of the Addon. Please refer to list [here](https://contabo.com/en/product-list/?show_ids=true).
 - `quantity` (Number) The number of Addons you wish to aquire.
+
+
+<a id="nestedblock--timeouts"></a>
+### Nested Schema for `timeouts`
+
+Optional:
+
+- `create` (String)
+- `delete` (String)
+- `update` (String)
 
 
 <a id="nestedatt--additional_ips"></a>
@@ -125,3 +145,14 @@ Read-Only:
 - `gateway` (String)
 - `ip` (String)
 - `netmask_cidr` (Number)
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Instances are imported by their id.
+terraform import contabo_instance.database 203235629
+```

@@ -33,12 +33,12 @@ data "contabo_object_storage" "example2" {
 
 output "my_object_storage1" {
   description = "my object storage 1"
-  value = data.contabo_object_storage.example1
+  value       = data.contabo_object_storage.example1
 }
 
 output "my_object_storage2" {
   description = "my object storage 2"
-  value = data.contabo_object_storage.example1
+  value       = data.contabo_object_storage.example1
 }
 ```
 

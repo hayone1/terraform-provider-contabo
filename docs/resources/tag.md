@@ -24,13 +24,13 @@ provider "contabo" {
 # Create a new tag
 resource "contabo_tag" "default_tag" {
   color = "#000002"
-  name="NewTag"
+  name  = "NewTag"
 }
 
 # Update an existing tag
 resource "contabo_tag" "default_tag" {
-	color 		  = "#ffffff"
-  name = "UpdatedTag"
+  color = "#ffffff"
+  name  = "UpdatedTag"
 }
 ```
 

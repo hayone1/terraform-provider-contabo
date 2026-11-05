@@ -3,32 +3,22 @@
 page_title: "contabo_instance Data Source - contabo"
 subcategory: ""
 description: |-
-  The Compute Management API allows you to manage compute resources (e.g. creation, deletion, starting, stopping) as well as managing snapshots and custom images. It also supports cloud-init https://cloud-init.io/ at least on our default images (for custom images you will need to provide cloud-init support packages). The API offers providing cloud-init scripts via the user_data field. Custom images must be provided in .qcow2 or .iso format.
+  Reads a compute instance by id. Use the contabo_instances data source to search instances.
 ---
 
 # contabo_instance (Data Source)
 
-The Compute Management API allows you to manage compute resources (e.g. creation, deletion, starting, stopping) as well as managing snapshots and custom images. It also supports [cloud-init](https://cloud-init.io/) at least on our default images (for custom images you will need to provide cloud-init support packages). The API offers providing cloud-init scripts via the user_data field. Custom images must be provided in .qcow2 or .iso format.
+Reads a compute instance by id. Use the `contabo_instances` data source to search instances.
 
 ## Example Usage
 
 ```terraform
-# Configure your Contabo API credentials
-provider "contabo" {
-  oauth2_client_id     = "[your client id]"
-  oauth2_client_secret = "[your client secret]"
-  oauth2_user          = "[your username]"
-  oauth2_pass          = "[your password]"
+data "contabo_instance" "database" {
+  id = "203235629"
 }
 
-# Search for a specific instance by ID
-data "contabo_instance" "test_instance" {
-  id = "123455"
-}
-
-output "my_test_instance" {
-  description = "my test instance"
-  value = data.contabo_instance.test_instance
+output "database_ip" {
+  value = data.contabo_instance.database.ip_config[0].v4[0].ip
 }
 ```
 
@@ -37,46 +27,65 @@ output "my_test_instance" {
 
 ### Required
 
-- `id` (String) The identifier of the compute instance. Use it to manage it!
-
-### Optional
-
-- `add_ons` (Block List) (see [below for nested schema](#nestedblock--add_ons))
-- `cancel_date` (String) The date on which the instance will be cancelled.
-- `default_user` (String) Default user name created for login during (re-)installation with administrative privileges. Allowed values for Linux/BSD are admin (use sudo to apply administrative privileges like root) or root. Allowed values for Windows are admin (has administrative privileges like administrator) or administrator.See our [api documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for available default users.
-- `display_name` (String) Image Id is used to set up the compute instance. Ubuntu 20.04 is the default.
-- `image_id` (String) Image Id is used to set up the compute instance. Ubuntu 20.04 is the default.
-- `license` (String) Additional license in order to enhance your chosen product. It is mainly needed for software licenses on your product (not needed for windows). See our [api documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for all available licenses.
-- `product_id` (String) Choose the VPS/VDS product you want to buy. See our products [here](https://api.contabo.com/#tag/Instances/operation/createInstance).
-- `region` (String) Instance Region where the compute instance should be located. Default region is the EU. Following regions are available: `EU`,`US-central`,`US-east`,`US-west`,`SIN`.
-- `ssh_keys` (List of Number) Array of `secretIds` of public SSH keys for logging into as defaultUser with administrator/root privileges. Applies to Linux/BSD systems. Please refer to Secrets Management API.
-- `user_data` (String) Cloud-Init Config in order to customize during start of compute instance.
+- `id` (String) The identifier of the compute instance.
 
 ### Read-Only
 
-- `additional_ips_v4` (List of Object) All other additional IP addresses of the instance. (see [below for nested schema](#nestedatt--additional_ips_v4))
+- `add_ons` (List of Object) All add-ons of the instance. (see [below for nested schema](#nestedatt--add_ons))
+- `additional_ips` (List of Object) All other additional IP addresses of the instance. (see [below for nested schema](#nestedatt--additional_ips))
+- `additional_ips_v4` (List of Object) Additional IPv4 addresses of the instance. Same data as `additional_ips`. (see [below for nested schema](#nestedatt--additional_ips_v4))
+- `cancel_date` (String) The date on which the instance will be cancelled, empty when it is not cancelled.
 - `cpu_cores` (Number) CPU core count of the instance.
 - `created_date` (String) The creation date of the compute instance.
-- `disk_mb` (Number) Image disk size of the instance in megabyte.
-- `error_message` (String) If the instance is in an error state (see status property), the error message can be seen in this field.
-- `ip_config` (List of Object) (see [below for nested schema](#nestedatt--ip_config))
-- `last_updated` (String) Time of the last update of the compute instance.
+- `data_center` (String) Data center of the instance.
+- `default_user` (String) Default user created during the installation.
+- `disk_mb` (Number) Disk size of the instance in megabyte.
+- `display_name` (String) The instance name chosen by the customer that will be shown in the customer panel.
+- `error_message` (String) If the instance is in an error state, the error message.
+- `image_id` (String) Id of the image the instance was installed with.
+- `ip_config` (List of Object) Primary IPv4 and IPv6 configuration of the instance. (see [below for nested schema](#nestedatt--ip_config))
+- `last_updated` (String) Deprecated: always empty.
+- `license` (String) Deprecated: the API does not return the license; always empty.
 - `mac_address` (String) Mac address of the instance.
-- `name` (String) Name of the compute instance.
+- `name` (String) Name of the compute instance, for example `vmi123456`.
 - `os_type` (String) Type of operating system (OS) installed on the instance.
-- `period` (Number) Initial contract period in months. Available periods are: 1, 3, 6 and 12 months. The default setting is 1 month.
-- `product_type` (String) InsInstance's category depending on Product Id. Following product types are available: `hdd`,`ssd`,`vds`,`nvme`.
-- `ram_mb` (Number) Image ram size in megabyte.
-- `status` (String) Status of the compute instance. The status can be set to `provisioning`, `uninstalled`, `running`, `stopped`, `error`, `installing`, `unknown`, or `installed`.
+- `period` (Number) Deprecated: the API does not return the contract period; always 0.
+- `product_id` (String) Product of the instance, for example `V153`.
+- `product_name` (String) Name of the product.
+- `product_type` (String) Category of the product, for example `ssd`, `nvme` or `vds`.
+- `ram_mb` (Number) RAM size in megabyte.
+- `region` (String) Region of the instance, for example `EU`.
+- `region_name` (String) Name of the region.
+- `ssh_keys` (List of Number) Secret ids of the SSH keys installed for the default user.
+- `status` (String) Status of the compute instance, for example `running`, `stopped` or `installing`.
+- `user_data` (String) Deprecated: the API does not return the user data; always empty.
 - `v_host_id` (Number) Identifier of the host system.
 
-<a id="nestedblock--add_ons"></a>
+<a id="nestedatt--add_ons"></a>
 ### Nested Schema for `add_ons`
 
-Optional:
+Read-Only:
 
-- `id` (String) Id of the Addon. Please refer to list [here](https://contabo.com/en/product-list/?show_ids=true).
-- `quantity` (Number) The number of Addons you wish to aquire.
+- `id` (String)
+- `quantity` (Number)
+
+
+<a id="nestedatt--additional_ips"></a>
+### Nested Schema for `additional_ips`
+
+Read-Only:
+
+- `v4` (List of Object) (see [below for nested schema](#nestedobjatt--additional_ips--v4))
+
+<a id="nestedobjatt--additional_ips--v4"></a>
+### Nested Schema for `additional_ips.v4`
+
+Read-Only:
+
+- `gateway` (String)
+- `ip` (String)
+- `netmask_cidr` (Number)
+
 
 
 <a id="nestedatt--additional_ips_v4"></a>

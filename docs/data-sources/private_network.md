@@ -28,7 +28,7 @@ data "contabo_private_network" "testnetwork" {
 
 output "my_test_private_network" {
   description = "my test private network"
-  value = data.contabo_private_network.testnetwork
+  value       = data.contabo_private_network.testnetwork
 }
 ```
 

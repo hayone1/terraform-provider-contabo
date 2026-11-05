@@ -13,5 +13,5 @@ data "contabo_instance_snapshot" "test_snapshot" {
 
 output "my_test_snapshot" {
   description = "my test snapshot"
-  value = data.contabo_instance_snapshot.test_snapshot
+  value       = data.contabo_instance_snapshot.test_snapshot
 }

@@ -1,18 +1,31 @@
 ---
-page_title: "contabo-terraform-provider"
+page_title: "Provider: Contabo (hayone1 distribution)"
 subcategory: ""
 description: |-
-  A terraform provider for managing your products from Contabo like Cloud VPS and VDS.
-
+  Unofficial distribution of the Contabo Terraform provider with fixes and features that are not released upstream yet.
 ---
 
-# Contabo Provider
+# Contabo Provider (hayone1 distribution)
 
-A terraform provider for managing resources offered by [Contabo](https://contabo.com) like Cloud VPS, VDS or S3 compatible Object Storage. For proper usage credentials are required.
+Unofficial distribution of the Contabo Terraform provider. Not made by or connected to Contabo GmbH.
 
+It is the [upstream provider](https://github.com/contabo/terraform-provider-contabo) plus patches that are not merged upstream yet, listed in [PATCHES.md](https://github.com/hayone1/terraform-provider-contabo/blob/main/PATCHES.md). When upstream merges a patch, this distribution drops its own copy.
+
+The provider manages resources offered by [Contabo](https://contabo.com): Cloud VPS and VDS instances, firewalls, private networks, virtual IPs, DNS zones and records, reverse DNS, object storage, custom images, snapshots, secrets, tags, roles and users. It needs the API credentials from the [Customer Control Panel](https://my.contabo.com/api/details).
+
+~> **Costs:** creating a `contabo_instance` or `contabo_object_storage` orders a product and starts billing. Destroying it cancels the product at the end of its contract period.
 
 ## Example Usage
 
 {{ tffile "examples/provider/provider.tf" }}
+
+## Migrating from `contabo/contabo`
+
+Resource schemas are compatible with the official provider, so existing state can be moved:
+
+1. Change `source = "contabo/contabo"` to `source = "hayone1/contabo"` in `required_providers`.
+2. Run `terraform init -upgrade`.
+3. Run `terraform state replace-provider registry.terraform.io/contabo/contabo registry.terraform.io/hayone1/contabo`. With OpenTofu, use `registry.opentofu.org` in both addresses.
+4. Run `terraform plan` and check the changes. Behavior changes are listed in the [changelog](https://github.com/hayone1/terraform-provider-contabo/blob/main/CHANGELOG.md).
 
 {{ .SchemaMarkdown | trimspace }}

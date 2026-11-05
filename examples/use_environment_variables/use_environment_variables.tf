@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     contabo = {
-      source = "contabo/contabo"
-      version = ">= 0.1.44"
+      source  = "hayone1/contabo"
+      version = ">= 0.2.0"
     }
   }
 }
@@ -29,5 +29,5 @@ resource "contabo_instance" "default_instance" {}
 # Output our newly created instances
 output "default_instance_output" {
   description = "Our first default instance"
-  value = contabo_instance.default_instance
+  value       = contabo_instance.default_instance
 }

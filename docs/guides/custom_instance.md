@@ -11,18 +11,18 @@ description: |-
 terraform {
   required_providers {
     contabo = {
-      source = "contabo/contabo"
-      version = ">= 0.1.44"
+      source  = "hayone1/contabo"
+      version = ">= 0.2.0"
     }
   }
 }
 
 # Configure your Contabo API credentials in provider stanza
 provider "contabo" {
-  oauth2_client_id = "[your client id]"
+  oauth2_client_id     = "[your client id]"
   oauth2_client_secret = "[your client secret]"
-  oauth2_user = "[your username]"
-  oauth2_pass = "[your password]"
+  oauth2_user          = "[your username]"
+  oauth2_pass          = "[your password]"
 }
 
 
@@ -34,12 +34,12 @@ data "contabo_image" "debian_11" {
 # or specify one with our custom image
 resource "contabo_instance" "custom_instance" {
   display_name = "Debian 11 instance"
-  image_id = contabo_image.debian_11.id
+  image_id     = contabo_image.debian_11.id
 }
 
 # Output our newly created instances
 output "custom_instance_output" {
   description = "Our first custom instance"
-  value = contabo_instance.custom_instance
+  value       = contabo_instance.custom_instance
 }
 ```

@@ -13,5 +13,5 @@ data "contabo_image" "debian_11" {
 
 output "my_test_image" {
   description = "my test image"
-  value = data.contabo_image.debian_11
+  value       = data.contabo_image.debian_11
 }

@@ -23,14 +23,14 @@ provider "contabo" {
 
 # Create a new secret
 resource "contabo_secret" "rootPassword" {
-  name        = "my_secret"
-	type        = "password"
-	value 		  = "SmthSecure!1!!"
+  name  = "my_secret"
+  type  = "password"
+  value = "SmthSecure!1!!"
 }
 
 # Update an existing secret
 resource "contabo_secret" "rootPassword" {
-	value 		  = "MoreSecurePassword?1!"
+  value = "MoreSecurePassword?1!"
 }
 ```
 

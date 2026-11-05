@@ -62,6 +62,8 @@ resource "contabo_ptr_record" "mail_ipv6" {
 
 Import is supported using the following syntax:
 
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
 ```shell
 # PTR records can be imported by IP address
 terraform import contabo_ptr_record.mail_ipv4 203.0.113.10

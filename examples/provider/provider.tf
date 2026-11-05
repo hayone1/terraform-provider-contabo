@@ -1,13 +1,15 @@
 terraform {
   required_providers {
     contabo = {
-      source = "contabo/contabo"
-      version = ">= 0.1.44"
+      source  = "hayone1/contabo"
+      version = ">= 0.2.0"
     }
   }
 }
 
-# Configure your Contabo API credentials in provider stanza
+# Configure your Contabo API credentials in the provider block or with the
+# CNTB_OAUTH2_CLIENT_ID, CNTB_OAUTH2_CLIENT_SECRET, CNTB_OAUTH2_USER and
+# CNTB_OAUTH2_PASS environment variables.
 provider "contabo" {
   oauth2_client_id     = "[your client id]"
   oauth2_client_secret = "[your client secret]"
