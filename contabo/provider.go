@@ -65,6 +65,7 @@ func Provider() *schema.Provider {
 			"contabo_tag":                   resourceTag(),
 			"contabo_tag_assignment":        resourceTagAssignment(),
 			"contabo_instance_reinstall":    resourceInstanceReinstall(),
+			"contabo_instance_vnc":          resourceInstanceVnc(),
 			"contabo_vip_assignment":        resourceVipAssignment(),
 			"contabo_role":                  resourceRole(),
 			"contabo_user":                  resourceUser(),

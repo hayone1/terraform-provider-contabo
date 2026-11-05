@@ -459,12 +459,14 @@ func (f *fakeAPI) routes() {
 			vnc = map[string]interface{}{"tenantId": "INT", "customerId": "12345", "instanceId": id, "enabled": true, "vncIp": "198.51.100.7", "vncPort": 63031}
 			f.vnc[id] = vnc
 		}
-		if v, ok := body["enabled"]; ok {
-			vnc["enabled"] = v
+		password, _ := body["vncPassword"].(string)
+		if !vncPasswordPattern.MatchString(password) {
+			f.mu.Unlock()
+			// Like the real API: the password is mandatory, and "enabled" is ignored.
+			writeJSON(w, http.StatusBadRequest, map[string]interface{}{"statusCode": 400, "message": []string{"vncPassword must be longer than or equal to 8 characters"}})
+			return
 		}
-		if v, ok := body["vncPassword"]; ok {
-			vnc["_password"] = v
-		}
+		vnc["_password"] = password
 		vnc = copyMap(vnc)
 		f.mu.Unlock()
 		writeData(w, http.StatusOK, vnc)

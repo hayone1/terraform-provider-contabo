@@ -253,3 +253,50 @@ resource "contabo_instance_reinstall" "talos" {
 		},
 	})
 }
+
+func TestUnitInstanceVncPassword(t *testing.T) {
+	api := newFakeAPI(t)
+	instanceId := api.addInstance(nil)
+
+	config := func(password string) string {
+		return api.providerConfig() + fmt.Sprintf(`
+resource "contabo_instance_vnc" "vnc" {
+  instance_id = "%d"
+  password    = %q
+}
+`, instanceId, password)
+	}
+
+	resource.UnitTest(t, resource.TestCase{
+		ProviderFactories: testProviderFactories(),
+		Steps: []resource.TestStep{
+			{
+				Config:      config("short"),
+				PlanOnly:    true,
+				ExpectError: regexp.MustCompile(`at least 8 characters`),
+			},
+			{
+				Config: config("Secret123"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("contabo_instance_vnc.vnc", "enabled", "true"),
+					resource.TestCheckResourceAttr("contabo_instance_vnc.vnc", "vnc_port", "63031"),
+					func(s *terraform.State) error {
+						if got := api.vnc[instanceId]["_password"]; got != "Secret123" {
+							return fmt.Errorf("password not set: %v", got)
+						}
+						return nil
+					},
+				),
+			},
+			{
+				Config: config("Secret456"),
+				Check: func(s *terraform.State) error {
+					if got := api.vnc[instanceId]["_password"]; got != "Secret456" {
+						return fmt.Errorf("password not updated: %v", got)
+					}
+					return nil
+				},
+			},
+		},
+	})
+}

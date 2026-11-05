@@ -44,7 +44,7 @@ This list shows the most important changes. The file [PATCHES.md](PATCHES.md) ha
 
 - **Fixes:** The API client builds again. The provider can read and create firewalls that protect instances. A reinstall keeps the `user_data` value and the `default_user` value. The provider reports errors when an instance update fails. A resource that someone deleted outside of Terraform no longer breaks the plan. An imported object storage no longer shows changes in every plan.
 - **Instances:** The new `cancel_on_destroy` setting decides whether destroying an instance cancels the instance. The `existing_instance_id` setting adopts an existing instance without reinstalling the instance. The provider can add private networking and backups to an existing instance. The plan fails early when you ask for a change that the API cannot make. Long operations have time limits.
-- **New resources:** DNS zones, DNS records, reverse DNS (PTR) records, `contabo_instance_reinstall`, `contabo_vip_assignment`, `contabo_role` and `contabo_user`.
+- **New resources:** DNS zones, DNS records, reverse DNS (PTR) records, `contabo_instance_reinstall`, `contabo_instance_vnc`, `contabo_vip_assignment`, `contabo_role` and `contabo_user`.
 - **New data sources:** `contabo_instances`, `contabo_vip`, `contabo_vips`, `contabo_object_storage_credentials`, `contabo_image_stats`, `contabo_instance_available_products`, `contabo_instance_vnc`, `contabo_role`, `contabo_api_permissions`, `contabo_users`, `contabo_dns_zone` and `contabo_ptr_record`.
 
 ## How to move from the official provider

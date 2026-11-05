@@ -41,6 +41,7 @@ This release is based on version `v0.1.44` of the official provider. This releas
 - `contabo_vip_assignment` assigns a virtual IP address to an instance.
 - `contabo_role` manages the roles of your account.
 - `contabo_user` manages the users of your account.
+- `contabo_instance_vnc` sets the password of the VNC console of an instance. The API cannot turn the VNC console off, so a strong password is the best protection. This resource answers part of issue #51.
 
 ### New data sources
 
