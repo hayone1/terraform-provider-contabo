@@ -3,12 +3,12 @@
 page_title: "contabo_instance_vnc Data Source - contabo"
 subcategory: ""
 description: |-
-  Reads the VNC console settings of an instance.
+  This data source reads the VNC console settings of an instance.
 ---
 
 # contabo_instance_vnc (Data Source)
 
-Reads the VNC console settings of an instance.
+This data source reads the VNC console settings of an instance.
 
 ## Example Usage
 
@@ -27,11 +27,11 @@ output "vnc" {
 
 ### Required
 
-- `instance_id` (String) Id of the instance.
+- `instance_id` (String) The id of the instance.
 
 ### Read-Only
 
-- `enabled` (Boolean) Whether VNC is enabled.
+- `enabled` (Boolean) Whether the VNC console of the instance is enabled.
 - `id` (String) The ID of this resource.
-- `vnc_ip` (String) IP address of the VNC console.
-- `vnc_port` (Number) Port of the VNC console.
+- `vnc_ip` (String) The IP address of the VNC console.
+- `vnc_port` (Number) The port of the VNC console.

@@ -3,12 +3,12 @@
 page_title: "contabo_users Data Source - contabo"
 subcategory: ""
 description: |-
-  Lists the users of the customer account, including the owner.
+  This data source lists the users of your Contabo account. The list includes the owner of the account.
 ---
 
 # contabo_users (Data Source)
 
-Lists the users of the customer account, including the owner.
+This data source lists the users of your Contabo account. The list includes the owner of the account.
 
 ## Example Usage
 
@@ -21,12 +21,12 @@ data "contabo_users" "all" {}
 
 ### Optional
 
-- `email` (String) Only the user with this email address.
+- `email` (String) When you set this filter, the list only contains the user with this email address.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `users` (List of Object) The matching users. (see [below for nested schema](#nestedatt--users))
+- `users` (List of Object) The users that match the filter. (see [below for nested schema](#nestedatt--users))
 
 <a id="nestedatt--users"></a>
 ### Nested Schema for `users`

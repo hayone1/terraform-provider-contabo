@@ -3,12 +3,12 @@
 page_title: "contabo_image_stats Data Source - contabo"
 subcategory: ""
 description: |-
-  Reads the usage of the custom image storage of the account. Custom image storage is an account-wide add-on; check free_size_mb before uploading an image with contabo_image.
+  This data source reads how much custom image storage your account uses. Custom image storage is an add-on for the whole account. Check free_size_mb before you upload an image with the contabo_image resource.
 ---
 
 # contabo_image_stats (Data Source)
 
-Reads the usage of the custom image storage of the account. Custom image storage is an account-wide add-on; check `free_size_mb` before uploading an image with `contabo_image`.
+This data source reads how much custom image storage your account uses. Custom image storage is an add-on for the whole account. Check `free_size_mb` before you upload an image with the `contabo_image` resource.
 
 ## Example Usage
 
@@ -35,8 +35,8 @@ resource "contabo_image" "talos" {
 
 ### Read-Only
 
-- `current_images_count` (Number) Number of custom images.
-- `free_size_mb` (Number) Free custom image storage in megabytes.
+- `current_images_count` (Number) The number of custom images in your account.
+- `free_size_mb` (Number) The free part of the custom image storage in megabytes.
 - `id` (String) The ID of this resource.
-- `total_size_mb` (Number) Size of the custom image storage in megabytes. 0 when the account has no custom image storage.
-- `used_size_mb` (Number) Used custom image storage in megabytes.
+- `total_size_mb` (Number) The size of the custom image storage in megabytes. The value is 0 when your account has no custom image storage.
+- `used_size_mb` (Number) The used part of the custom image storage in megabytes.

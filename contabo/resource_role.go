@@ -39,7 +39,7 @@ func rolePath(roleId string) string {
 
 func resourceRole() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manages a custom role. A role grants API permissions to users, either on all resources or only on resources that carry certain tags. Use it with `contabo_user` to create users with least-privilege API access, for example DNS only.",
+		Description:   "This resource manages a custom role. A role gives users permissions for the API. A role can give permissions for all resources, or only for resources that have certain tags. Use this resource together with the `contabo_user` resource to create users that can only do what the users need, for example only manage DNS records.",
 		CreateContext: resourceRoleCreate,
 		ReadContext:   resourceRoleRead,
 		UpdateContext: resourceRoleUpdate,
@@ -52,42 +52,42 @@ func resourceRole() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringLenBetween(1, 255),
-				Description:  "Name of the role.",
+				Description:  "The name of the role.",
 			},
 			"admin": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Whether the role grants access to every API endpoint and resource. Defaults to `false`.",
+				Description: "Whether the role gives access to every API endpoint and to every resource. The default value is `false`.",
 			},
 			"access_all_resources": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Whether the permissions apply to all resources. When false, each permission applies only to resources with the tags in its `resources`. Defaults to `false`.",
+				Description: "Whether the permissions of the role apply to all resources. When the value is `false`, each permission only applies to resources that have one of the tags in the `resources` list of the permission. The default value is `false`.",
 			},
 			"permission": {
 				Type:        schema.TypeSet,
 				Optional:    true,
-				Description: "API permissions of the role. List the API names with the `contabo_api_permissions` data source.",
+				Description: "The API permissions of the role. The `contabo_api_permissions` data source lists the API names that you can use.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"api_name": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "API endpoint, for example `/v1/dns/zones` or `/v1/compute/instances/:instanceId`.",
+							Description: "The API endpoint, for example `/v1/dns/zones` or `/v1/compute/instances/:instanceId`.",
 						},
 						"actions": {
 							Type:        schema.TypeSet,
 							Required:    true,
 							Elem:        &schema.Schema{Type: schema.TypeString, ValidateFunc: validation.StringInSlice(roleActions, false)},
-							Description: "Allowed actions: `CREATE` (POST), `READ` (GET), `UPDATE` (PATCH, PUT) and `DELETE`.",
+							Description: "The actions that the permission allows. `CREATE` allows POST requests, `READ` allows GET requests, `UPDATE` allows PATCH and PUT requests, and `DELETE` allows DELETE requests.",
 						},
 						"resources": {
 							Type:        schema.TypeSet,
 							Optional:    true,
 							Elem:        &schema.Schema{Type: schema.TypeInt},
-							Description: "Tag ids. The permission applies only to resources with one of these tags. Ignored when `access_all_resources` is true.",
+							Description: "The ids of tags. The permission only applies to resources that have one of these tags. The provider ignores this list when `access_all_resources` is `true`.",
 						},
 					},
 				},
@@ -95,7 +95,7 @@ func resourceRole() *schema.Resource {
 			"type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Role type: `custom` for roles managed here, `default` for built-in roles.",
+				Description: "The type of the role. The value is `custom` for roles that you create, and `default` for the roles that Contabo provides.",
 			},
 		},
 	}
@@ -224,7 +224,7 @@ func dataSourceRole() *schema.Resource {
 	}
 	computedPermission.Schema["actions"].Elem = &schema.Schema{Type: schema.TypeString}
 	return &schema.Resource{
-		Description: "Reads a role, built-in or custom, by id or name. Built-in roles include `S3 Read` and `S3 Read and Write`.",
+		Description: "This data source reads one role by id or by name. The role can be a custom role or a role that Contabo provides, for example `S3 Read` or `S3 Read and Write`.",
 		ReadContext: dataSourceRoleRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -232,22 +232,22 @@ func dataSourceRole() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 				ExactlyOneOf: []string{"id", "name"},
-				Description:  "Id of the role.",
+				Description:  "The id of the role.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
 				ExactlyOneOf: []string{"id", "name"},
-				Description:  "Name of the role. It must match exactly one role.",
+				Description:  "The name of the role. Exactly one role must have this name.",
 			},
-			"admin":                {Type: schema.TypeBool, Computed: true, Description: "Whether the role grants access to everything."},
-			"access_all_resources": {Type: schema.TypeBool, Computed: true, Description: "Whether the permissions apply to all resources."},
-			"type":                 {Type: schema.TypeString, Computed: true, Description: "`default` or `custom`."},
+			"admin":                {Type: schema.TypeBool, Computed: true, Description: "Whether the role gives access to every API endpoint and to every resource."},
+			"access_all_resources": {Type: schema.TypeBool, Computed: true, Description: "Whether the permissions of the role apply to all resources."},
+			"type":                 {Type: schema.TypeString, Computed: true, Description: "The type of the role. The value is `default` or `custom`."},
 			"permission": {
 				Type:        schema.TypeSet,
 				Computed:    true,
-				Description: "API permissions of the role.",
+				Description: "The API permissions of the role.",
 				Elem:        computedPermission,
 			},
 		},
@@ -303,22 +303,22 @@ func dataSourceRoleRead(ctx context.Context, d *schema.ResourceData, m interface
 
 func dataSourceApiPermissions() *schema.Resource {
 	return &schema.Resource{
-		Description: "Lists the API endpoints that roles can grant permissions on, with the actions each allows.",
+		Description: "This data source lists the API endpoints that a role can give permissions for. For each API endpoint, the data source lists the actions that the endpoint allows.",
 		ReadContext: dataSourceApiPermissionsRead,
 		Schema: map[string]*schema.Schema{
 			"api_name_prefix": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only API names that start with this prefix, for example `/v1/dns`.",
+				Description: "When you set this filter, the list only contains API names that start with this text, for example `/v1/dns`.",
 			},
 			"permissions": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "The API permissions, sorted by API name.",
+				Description: "The API permissions, sorted by the API name.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"api_name": {Type: schema.TypeString, Computed: true, Description: "API endpoint."},
-						"actions":  {Type: schema.TypeList, Computed: true, Elem: &schema.Schema{Type: schema.TypeString}, Description: "Actions the endpoint supports."},
+						"api_name": {Type: schema.TypeString, Computed: true, Description: "The API endpoint."},
+						"actions":  {Type: schema.TypeList, Computed: true, Elem: &schema.Schema{Type: schema.TypeString}, Description: "The actions that the API endpoint allows."},
 					},
 				},
 			},

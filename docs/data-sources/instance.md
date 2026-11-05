@@ -3,12 +3,12 @@
 page_title: "contabo_instance Data Source - contabo"
 subcategory: ""
 description: |-
-  Reads a compute instance by id. Use the contabo_instances data source to search instances.
+  This data source reads one compute instance by the id of the instance. To search for instances, use the contabo_instances data source.
 ---
 
 # contabo_instance (Data Source)
 
-Reads a compute instance by id. Use the `contabo_instances` data source to search instances.
+This data source reads one compute instance by the id of the instance. To search for instances, use the `contabo_instances` data source.
 
 ## Example Usage
 
@@ -27,39 +27,39 @@ output "database_ip" {
 
 ### Required
 
-- `id` (String) The identifier of the compute instance.
+- `id` (String) The id of the instance that the data source reads.
 
 ### Read-Only
 
-- `add_ons` (List of Object) All add-ons of the instance. (see [below for nested schema](#nestedatt--add_ons))
-- `additional_ips` (List of Object) All other additional IP addresses of the instance. (see [below for nested schema](#nestedatt--additional_ips))
-- `additional_ips_v4` (List of Object) Additional IPv4 addresses of the instance. Same data as `additional_ips`. (see [below for nested schema](#nestedatt--additional_ips_v4))
-- `cancel_date` (String) The date on which the instance will be cancelled, empty when it is not cancelled.
-- `cpu_cores` (Number) CPU core count of the instance.
-- `created_date` (String) The creation date of the compute instance.
-- `data_center` (String) Data center of the instance.
-- `default_user` (String) Default user created during the installation.
-- `disk_mb` (Number) Disk size of the instance in megabyte.
-- `display_name` (String) The instance name chosen by the customer that will be shown in the customer panel.
-- `error_message` (String) If the instance is in an error state, the error message.
-- `image_id` (String) Id of the image the instance was installed with.
-- `ip_config` (List of Object) Primary IPv4 and IPv6 configuration of the instance. (see [below for nested schema](#nestedatt--ip_config))
-- `last_updated` (String) Deprecated: always empty.
-- `license` (String) Deprecated: the API does not return the license; always empty.
-- `mac_address` (String) Mac address of the instance.
-- `name` (String) Name of the compute instance, for example `vmi123456`.
-- `os_type` (String) Type of operating system (OS) installed on the instance.
-- `period` (Number) Deprecated: the API does not return the contract period; always 0.
-- `product_id` (String) Product of the instance, for example `V153`.
-- `product_name` (String) Name of the product.
-- `product_type` (String) Category of the product, for example `ssd`, `nvme` or `vds`.
-- `ram_mb` (Number) RAM size in megabyte.
-- `region` (String) Region of the instance, for example `EU`.
-- `region_name` (String) Name of the region.
-- `ssh_keys` (List of Number) Secret ids of the SSH keys installed for the default user.
-- `status` (String) Status of the compute instance, for example `running`, `stopped` or `installing`.
-- `user_data` (String) Deprecated: the API does not return the user data; always empty.
-- `v_host_id` (Number) Identifier of the host system.
+- `add_ons` (List of Object) The list of all add-ons of the instance. (see [below for nested schema](#nestedatt--add_ons))
+- `additional_ips` (List of Object) The additional IP addresses of the instance. (see [below for nested schema](#nestedatt--additional_ips))
+- `additional_ips_v4` (List of Object) The additional IPv4 addresses of the instance. This attribute has the same data as `additional_ips`. (see [below for nested schema](#nestedatt--additional_ips_v4))
+- `cancel_date` (String) The date when the instance will be cancelled. The value is empty when the instance is not cancelled.
+- `cpu_cores` (Number) The number of CPU cores of the instance.
+- `created_date` (String) The date when the instance was created.
+- `data_center` (String) The data center of the instance, for example `European Union 2`.
+- `default_user` (String) The default user that the installation created, for example `root` or `admin`.
+- `disk_mb` (Number) The size of the disk of the instance in megabytes.
+- `display_name` (String) The display name of the instance. The Customer Control Panel shows this name.
+- `error_message` (String) The error message of the instance. The value is only set when the status of the instance is `error`.
+- `image_id` (String) The id of the image that the instance was installed with.
+- `ip_config` (List of Object) The main IPv4 address and the main IPv6 address of the instance, with the network settings of the addresses. (see [below for nested schema](#nestedatt--ip_config))
+- `last_updated` (String) This attribute is deprecated, and the value is always empty.
+- `license` (String) This attribute is deprecated. The API does not return the license, so the value is always empty.
+- `mac_address` (String) The MAC address of the instance.
+- `name` (String) The name that Contabo gave the instance, for example `vmi123456`.
+- `os_type` (String) The type of operating system that is installed on the instance, for example `Linux`.
+- `period` (Number) This attribute is deprecated. The API does not return the contract period, so the value is always 0.
+- `product_id` (String) The product id of the instance, for example `V153`.
+- `product_name` (String) The name of the product of the instance, for example `Cloud VPS 4`.
+- `product_type` (String) The category of the product of the instance, for example `ssd`, `nvme` or `vds`.
+- `ram_mb` (Number) The size of the memory (RAM) of the instance in megabytes.
+- `region` (String) The region of the instance, for example `EU`.
+- `region_name` (String) The full name of the region of the instance, for example `European Union`.
+- `ssh_keys` (List of Number) The secret ids of the SSH keys that the installation added for the default user.
+- `status` (String) The status of the instance, for example `running`, `stopped` or `installing`.
+- `user_data` (String) This attribute is deprecated. The API does not return the user data, so the value is always empty.
+- `v_host_id` (Number) The id of the host system that runs the instance.
 
 <a id="nestedatt--add_ons"></a>
 ### Nested Schema for `add_ons`

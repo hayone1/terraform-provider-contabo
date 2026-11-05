@@ -40,7 +40,7 @@ func userPath(userId string) string {
 
 func resourceUser() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manages a user of the customer account. The API sends the user an email to set a password; with it, the user gets their own API credentials limited to the permissions of their roles. Destroying the resource deletes the user. The account owner cannot be managed here.",
+		Description:   "This resource manages a user of your Contabo account. The API sends the new user an email with a link to set a password. With the password, the user gets API credentials. The API credentials of the user only allow what the roles of the user allow. When Terraform destroys this resource, the provider deletes the user. This resource cannot manage the owner of the account.",
 		CreateContext: resourceUserCreate,
 		ReadContext:   resourceUserRead,
 		UpdateContext: resourceUserUpdate,
@@ -53,64 +53,64 @@ func resourceUser() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "Email address of the user. Activation and password reset links are sent to it. Changing it creates a new user.",
+				Description: "The email address of the user. Contabo sends the activation link and the password reset links to this address. When you change the email address, Terraform creates a new user.",
 			},
 			"first_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "First name of the user.",
+				Description: "The first name of the user.",
 			},
 			"last_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Last name of the user.",
+				Description: "The last name of the user.",
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Whether the user can log in. Defaults to `true`.",
+				Description: "Whether the user can log in. The default value is `true`.",
 			},
 			"totp": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Whether two-factor authentication with a time-based one-time password is enabled. Defaults to `false`.",
+				Description: "Whether the user must log in with a second code from an authenticator app. The default value is `false`.",
 			},
 			"secondary_email": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Whether two-factor authentication with a code sent to a secondary email address is enabled. Defaults to `false`.",
+				Description: "Whether the user must log in with a second code that Contabo sends to a second email address. The default value is `false`.",
 			},
 			"locale": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Default:      "en",
 				ValidateFunc: validation.StringInSlice(userLocales, false),
-				Description:  "Locale of the user: `de-DE`, `de`, `en-US`, `en`, `es-ES`, `es`, `pt-BR` or `pt`. Defaults to `en`.",
+				Description:  "The language setting of the user. The value is `de-DE`, `de`, `en-US`, `en`, `es-ES`, `es`, `pt-BR` or `pt`. The default value is `en`.",
 			},
 			"roles": {
 				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
-				Description: "Ids of the roles of the user, for example from `contabo_role`.",
+				Description: "The ids of the roles of the user. You can use the ids of `contabo_role` resources.",
 			},
 			"send_invoice_email": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Whether the user receives invoice emails. Defaults to `false`.",
+				Description: "Whether the user receives emails with invoices. The default value is `false`.",
 			},
 			"email_verified": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether the user has verified the email address.",
+				Description: "Whether the user has confirmed the email address.",
 			},
 			"owner": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether the user is the account owner.",
+				Description: "Whether the user is the owner of the account.",
 			},
 		},
 	}
@@ -232,25 +232,25 @@ func resourceUserDelete(ctx context.Context, d *schema.ResourceData, m interface
 
 func dataSourceUsers() *schema.Resource {
 	userAttributes := map[string]*schema.Schema{
-		"id": {Type: schema.TypeString, Computed: true, Description: "Id of the user."},
+		"id": {Type: schema.TypeString, Computed: true, Description: "The id of the user."},
 	}
 	for name, attribute := range resourceUser().Schema {
 		computed := &schema.Schema{Type: attribute.Type, Elem: attribute.Elem, Computed: true, Description: attribute.Description}
 		userAttributes[name] = computed
 	}
 	return &schema.Resource{
-		Description: "Lists the users of the customer account, including the owner.",
+		Description: "This data source lists the users of your Contabo account. The list includes the owner of the account.",
 		ReadContext: dataSourceUsersRead,
 		Schema: map[string]*schema.Schema{
 			"email": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only the user with this email address.",
+				Description: "When you set this filter, the list only contains the user with this email address.",
 			},
 			"users": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "The matching users.",
+				Description: "The users that match the filter.",
 				Elem:        &schema.Resource{Schema: userAttributes},
 			},
 		},

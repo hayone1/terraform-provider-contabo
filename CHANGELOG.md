@@ -1,61 +1,61 @@
 # Changelog
 
-All releases of the `hayone1/contabo` distribution. Version numbers are independent of upstream; each release names its upstream base.
+This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
-## v0.2.0 (unreleased)
+## v0.2.0 (not released yet)
 
-Based on upstream `v0.1.44`. First release of the distribution.
+This release is based on version `v0.1.44` of the official provider. This release is the first release of the distribution.
 
-### Behavior changes to check when migrating from `contabo/contabo`
+### Behavior changes to check when you move from `contabo/contabo`
 
-- `contabo_instance`: `add_ons` are now ordered when the instance is created. They were ignored before. Adding private networking (`1477`) or backup (`2214`) to an existing instance now orders the add-on through the upgrade API; other added add-ons fail at plan time. When `add_ons` is set, the state lists only the configured add-ons.
-- `contabo_instance`: changing `product_id` or `region` of an existing instance now fails at plan time. It was silently ignored.
-- `contabo_instance`: a reinstall now sends `user_data`, `ssh_keys`, `root_password`, `default_user` and `application_id` from the configuration, not only the changed ones.
-- `contabo_instance`: adopting an instance with `existing_instance_id` no longer reinstalls it.
-- `contabo_instance`: new `cancel_on_destroy` (default `true`, as before).
-- `contabo_firewall`: rules without `action` or `status` are now created as `accept` and `active`; before, they were silently dropped. `protocol = "any"` is reported as `any`. `rules` accepts one block. `instances_status` is read only. The drop-all rule that the API appends is no longer shown.
-- `contabo_firewall` data source: looks the firewall up by `id` or `name`; all other attributes are read only.
-- `contabo_object_storage`: `region` accepts the slug (`EU`) and the name (`European Union`); changing it fails at plan time.
-- Resources deleted outside Terraform are removed from the state instead of failing the plan.
-- The OAuth2 token cache in `~/.cache/contabo/terraform/` is now one file per token URL, client id and user. `CNTB_TOKEN_CACHE_DIR` moves it.
+- `contabo_instance`: The provider now orders the add-ons in `add_ons` when the provider creates an instance. The official provider ignored the `add_ons` setting. When you add private networking (add-on `1477`) or automated backup (add-on `2214`) to an existing instance, the provider now orders the add-on through the upgrade API. When you add any other add-on to an existing instance, the plan fails, because the API cannot add that add-on. When you set `add_ons`, the state lists only the add-ons from your configuration.
+- `contabo_instance`: When you change `product_id` or `region` of an existing instance, the plan now fails with an error. The official provider silently ignored such a change.
+- `contabo_instance`: A reinstall now sends the values of `user_data`, `ssh_keys`, `root_password`, `default_user` and `application_id` from your configuration. The official provider sent only the values that had changed, so the reinstalled server lost the other values.
+- `contabo_instance`: When you adopt an instance with `existing_instance_id`, the provider no longer reinstalls the instance.
+- `contabo_instance`: The new setting `cancel_on_destroy` decides whether destroying the resource cancels the instance. The default value is `true`, which matches the old behavior.
+- `contabo_firewall`: A rule without an `action` value is now created with the action `accept`, and a rule without a `status` value is now created with the status `active`. The official provider silently skipped such rules. A rule for every protocol shows the protocol `any`. The `rules` setting accepts one block. The `instances_status` attribute is now read-only. The provider no longer shows the "Block all traffic" rule that the API adds to the end of every firewall.
+- `contabo_firewall` data source: The data source now finds a firewall by `id` or by `name`. All other attributes of the data source are read-only.
+- `contabo_object_storage`: The `region` setting accepts the short region code (for example `EU`) and the region name (for example `European Union`). When you change the region of an existing object storage, the plan fails with an error.
+- All resources: When someone deletes a resource outside of Terraform, the provider removes the resource from the state. The official provider failed the plan instead.
+- The provider stores its login token in the folder `~/.cache/contabo/terraform/`. The provider now keeps one token file for each combination of token URL, client id and user. The environment variable `CNTB_TOKEN_CACHE_DIR` moves the token files to a different folder.
 
 ### Fixes
 
-- The API client builds from the current API spec (upstream PR #57).
-- Firewalls with instances can be read, imported and created: the API returns `instances` as a JSON-encoded string (issues #52, #56).
-- Fixed a panic for firewall rules with an empty `src_cidr` block (issue #56).
-- Reinstalls keep `user_data` (issue #49) and `default_user` (issues #45, #47).
-- Errors from instance display name updates and reinstalls are reported.
-- Instances adopted with `existing_instance_id` can be destroyed (issue #38).
-- Object storage imports converge (issue #34).
-- Firewall instance assignments change only the difference instead of unassigning every instance first.
-- Waiting for instances and image downloads has a timeout instead of an unbounded recursive poll.
-- Panics on failed image reads and on missing object storages are fixed.
-- API errors show the request and the real status code.
-- Long applies log in again when the refresh token has expired.
+- The API client builds from the current API specification. This fix comes from pull request #57 of the official repository.
+- The provider can read, import and create firewalls that protect instances. The API returns the list of instances as text that contains JSON (for example `"[203235786]"`), and the official provider could not read that text. This fix closes issues #52 and #56.
+- The provider no longer crashes when a firewall rule has an empty `src_cidr` block. This fix closes issue #56.
+- A reinstall keeps the `user_data` value (issue #49) and the `default_user` value (issues #45 and #47).
+- The provider reports errors when a change of the display name or a reinstall of an instance fails.
+- You can destroy an instance that you adopted with `existing_instance_id`. This fix closes issue #38.
+- An imported object storage no longer shows changes in every plan. This fix closes issue #34.
+- When you change the instances of a firewall, the provider now adds and removes only the changed instances. The official provider first removed every instance from the firewall, so the instances were unprotected for a moment.
+- The provider waits for new instances and for image downloads with a time limit. The official provider waited without a limit.
+- The provider no longer crashes when reading an image fails or when an object storage is missing.
+- Error messages from the API now show the request and the real HTTP status code.
+- During a long `terraform apply`, the provider logs in again when the login token expires.
 
 ### New resources
 
-- `contabo_dns_zone`, `contabo_dns_record`, `contabo_ptr_record` (upstream PR #59)
-- `contabo_instance_reinstall`
-- `contabo_vip_assignment`
-- `contabo_role`
-- `contabo_user`
+- `contabo_dns_zone`, `contabo_dns_record` and `contabo_ptr_record` manage DNS zones, DNS records and reverse DNS records. These resources come from pull request #59 of the official repository.
+- `contabo_instance_reinstall` reinstalls an instance.
+- `contabo_vip_assignment` assigns a virtual IP address to an instance.
+- `contabo_role` manages the roles of your account.
+- `contabo_user` manages the users of your account.
 
 ### New data sources
 
-- `contabo_dns_zone`, `contabo_ptr_record` (upstream PR #59)
-- `contabo_instances` (issue #54)
-- `contabo_vip`, `contabo_vips`
-- `contabo_object_storage_credentials`
-- `contabo_image_stats`
-- `contabo_instance_available_products`
-- `contabo_instance_vnc` (issue #51, read only)
-- `contabo_role`, `contabo_api_permissions`, `contabo_users`
+- `contabo_dns_zone` and `contabo_ptr_record` read DNS zones and reverse DNS records. These data sources come from pull request #59 of the official repository.
+- `contabo_instances` lists instances. This data source closes issue #54.
+- `contabo_vip` and `contabo_vips` read virtual IP addresses.
+- `contabo_object_storage_credentials` reads the S3 keys of the API user.
+- `contabo_image_stats` reads how much custom image storage is used and how much is free.
+- `contabo_instance_available_products` lists the products that an instance can be upgraded to.
+- `contabo_instance_vnc` reads the VNC settings of an instance. This data source answers part of issue #51.
+- `contabo_role`, `contabo_api_permissions` and `contabo_users` read roles, API permissions and users.
 
-### Other
+### Other changes
 
-- Import for `contabo_object_storage_bucket` (upstream PR #58).
-- New instance attributes: `region_name`, `data_center`, `product_name`, `application_id`; `default_user` is read from the API.
-- Timeouts for instances, firewalls, reinstalls and images.
-- terraform-plugin-sdk v2.40.
+- You can import a `contabo_object_storage_bucket` resource. This change comes from pull request #58 of the official repository.
+- The `contabo_instance` resource has the new attributes `region_name`, `data_center`, `product_name` and `application_id`. The provider now reads the `default_user` value from the API.
+- Instances, firewalls, reinstalls and images have time limits that you can change with a `timeouts` block.
+- The provider uses version 2.40 of terraform-plugin-sdk.

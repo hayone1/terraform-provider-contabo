@@ -11,7 +11,7 @@ import (
 
 func dataSourceFirewall() *schema.Resource {
 	return &schema.Resource{
-		Description: "Reads a firewall by id or by name.",
+		Description: "This data source reads one firewall by the id or by the name of the firewall.",
 		ReadContext: dataSourceFirewallRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -19,47 +19,47 @@ func dataSourceFirewall() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 				ExactlyOneOf: []string{"id", "name"},
-				Description:  "The identifier of the Firewall. Set either `id` or `name`.",
+				Description:  "The id of the firewall. Set either `id` or `name`.",
 			},
 			"name": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
 				ExactlyOneOf: []string{"id", "name"},
-				Description:  "The name of the Firewall. Set either `id` or `name`; the name must match exactly one firewall.",
+				Description:  "The name of the firewall. Set either `id` or `name`. Exactly one firewall must have this name.",
 			},
 			"created_date": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The creation date of the Firewall.",
+				Description: "The date when the firewall was created.",
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The description of the Firewall.",
+				Description: "The description of the firewall.",
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Status of the Firewall: `active` or `inactive`.",
+				Description: "The status of the firewall. The value is `active` or `inactive`.",
 			},
 			"instance_ids": {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 				Computed:    true,
-				Description: "Ids of the instances the firewall applies to.",
+				Description: "The ids of the instances that the firewall protects.",
 			},
 			"instances_status": firewallInstancesStatusSchema(),
 			"rules": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "Rules of the firewall.",
+				Description: "The rules of the firewall.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"inbound": {
 							Type:        schema.TypeList,
 							Computed:    true,
-							Description: "Inbound rules.",
+							Description: "The inbound rules of the firewall.",
 							Elem:        firewallRuleSchema(true),
 						},
 					},

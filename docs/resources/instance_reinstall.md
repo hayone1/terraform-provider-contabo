@@ -3,18 +3,18 @@
 page_title: "contabo_instance_reinstall Resource - contabo"
 subcategory: ""
 description: |-
-  Reinstalls an existing instance. The reinstall runs when the resource is created and again whenever an argument or a value in triggers changes, for example after a private network was attached and the instance needs a fresh installation to configure it. Destroying the resource does nothing to the instance.
-  CAUTION: a reinstall erases the disk of the instance.
-  When this resource manages the installation, add image_id, ssh_keys, root_password, user_data, default_user and application_id of the contabo_instance to its lifecycle.ignore_changes, so that the two resources do not reinstall in turns.
+  This resource reinstalls an existing instance. The provider reinstalls the instance when Terraform creates this resource. The provider reinstalls the instance again whenever a setting of this resource or a value in triggers changes. For example, an instance needs a fresh installation after you attach a private network to the instance. When Terraform destroys this resource, nothing happens to the instance.
+  CAUTION: A reinstall erases the disk of the instance.
+  When this resource manages the installation of an instance, add image_id, ssh_keys, root_password, user_data, default_user and application_id to the lifecycle.ignore_changes list of the contabo_instance resource. Otherwise the two resources take turns to reinstall the instance.
 ---
 
 # contabo_instance_reinstall (Resource)
 
-Reinstalls an existing instance. The reinstall runs when the resource is created and again whenever an argument or a value in `triggers` changes, for example after a private network was attached and the instance needs a fresh installation to configure it. Destroying the resource does nothing to the instance.
+This resource reinstalls an existing instance. The provider reinstalls the instance when Terraform creates this resource. The provider reinstalls the instance again whenever a setting of this resource or a value in `triggers` changes. For example, an instance needs a fresh installation after you attach a private network to the instance. When Terraform destroys this resource, nothing happens to the instance.
 
-CAUTION: a reinstall erases the disk of the instance.
+CAUTION: A reinstall erases the disk of the instance.
 
-When this resource manages the installation, add `image_id`, `ssh_keys`, `root_password`, `user_data`, `default_user` and `application_id` of the `contabo_instance` to its `lifecycle.ignore_changes`, so that the two resources do not reinstall in turns.
+When this resource manages the installation of an instance, add `image_id`, `ssh_keys`, `root_password`, `user_data`, `default_user` and `application_id` to the `lifecycle.ignore_changes` list of the `contabo_instance` resource. Otherwise the two resources take turns to reinstall the instance.
 
 ## Example Usage
 
@@ -54,24 +54,24 @@ resource "contabo_instance" "node" {
 
 ### Required
 
-- `image_id` (String) Id of the image to install.
-- `instance_id` (String) Id of the instance to reinstall.
+- `image_id` (String) The id of the image that the provider installs.
+- `instance_id` (String) The id of the instance that the provider reinstalls.
 
 ### Optional
 
-- `application_id` (String) Id of an application to install with the image.
-- `default_user` (String) Default user: `root`, `admin` or, on Windows, `administrator`. The API defaults to `admin`.
-- `root_password` (Number) Secret id of the root password.
-- `ssh_keys` (List of Number) Secret ids of the public SSH keys for the default user.
+- `application_id` (String) The id of an application that the provider installs together with the image.
+- `default_user` (String) The default user that the installation creates. The value is `root` or `admin`, or `administrator` on Windows. When you do not set this value, the API uses `admin`.
+- `root_password` (Number) The secret id of the root password.
+- `ssh_keys` (List of Number) The secret ids of the public SSH keys. The installation adds these keys for the default user.
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
-- `triggers` (Map of String) Arbitrary values; any change reinstalls the instance.
-- `user_data` (String) Cloud-init configuration.
+- `triggers` (Map of String) A map of any values that you choose. When a value in this map changes, the provider reinstalls the instance.
+- `user_data` (String) The cloud-init configuration that the instance runs on the first start.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `reinstalled_at` (String) Time of the reinstall, RFC 3339.
-- `status` (String) Status of the instance after the reinstall.
+- `reinstalled_at` (String) The time of the reinstall in RFC 3339 format.
+- `status` (String) The status of the instance after the reinstall.
 
 <a id="nestedblock--timeouts"></a>
 ### Nested Schema for `timeouts`

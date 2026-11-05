@@ -3,12 +3,12 @@
 page_title: "contabo_role Resource - contabo"
 subcategory: ""
 description: |-
-  Manages a custom role. A role grants API permissions to users, either on all resources or only on resources that carry certain tags. Use it with contabo_user to create users with least-privilege API access, for example DNS only.
+  This resource manages a custom role. A role gives users permissions for the API. A role can give permissions for all resources, or only for resources that have certain tags. Use this resource together with the contabo_user resource to create users that can only do what the users need, for example only manage DNS records.
 ---
 
 # contabo_role (Resource)
 
-Manages a custom role. A role grants API permissions to users, either on all resources or only on resources that carry certain tags. Use it with `contabo_user` to create users with least-privilege API access, for example DNS only.
+This resource manages a custom role. A role gives users permissions for the API. A role can give permissions for all resources, or only for resources that have certain tags. Use this resource together with the `contabo_user` resource to create users that can only do what the users need, for example only manage DNS records.
 
 ## Example Usage
 
@@ -54,30 +54,30 @@ resource "contabo_role" "team_a_instances" {
 
 ### Required
 
-- `name` (String) Name of the role.
+- `name` (String) The name of the role.
 
 ### Optional
 
-- `access_all_resources` (Boolean) Whether the permissions apply to all resources. When false, each permission applies only to resources with the tags in its `resources`. Defaults to `false`.
-- `admin` (Boolean) Whether the role grants access to every API endpoint and resource. Defaults to `false`.
-- `permission` (Block Set) API permissions of the role. List the API names with the `contabo_api_permissions` data source. (see [below for nested schema](#nestedblock--permission))
+- `access_all_resources` (Boolean) Whether the permissions of the role apply to all resources. When the value is `false`, each permission only applies to resources that have one of the tags in the `resources` list of the permission. The default value is `false`.
+- `admin` (Boolean) Whether the role gives access to every API endpoint and to every resource. The default value is `false`.
+- `permission` (Block Set) The API permissions of the role. The `contabo_api_permissions` data source lists the API names that you can use. (see [below for nested schema](#nestedblock--permission))
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `type` (String) Role type: `custom` for roles managed here, `default` for built-in roles.
+- `type` (String) The type of the role. The value is `custom` for roles that you create, and `default` for the roles that Contabo provides.
 
 <a id="nestedblock--permission"></a>
 ### Nested Schema for `permission`
 
 Required:
 
-- `actions` (Set of String) Allowed actions: `CREATE` (POST), `READ` (GET), `UPDATE` (PATCH, PUT) and `DELETE`.
-- `api_name` (String) API endpoint, for example `/v1/dns/zones` or `/v1/compute/instances/:instanceId`.
+- `actions` (Set of String) The actions that the permission allows. `CREATE` allows POST requests, `READ` allows GET requests, `UPDATE` allows PATCH and PUT requests, and `DELETE` allows DELETE requests.
+- `api_name` (String) The API endpoint, for example `/v1/dns/zones` or `/v1/compute/instances/:instanceId`.
 
 Optional:
 
-- `resources` (Set of Number) Tag ids. The permission applies only to resources with one of these tags. Ignored when `access_all_resources` is true.
+- `resources` (Set of Number) The ids of tags. The permission only applies to resources that have one of these tags. The provider ignores this list when `access_all_resources` is `true`.
 
 ## Import
 

@@ -3,12 +3,12 @@
 page_title: "contabo_role Data Source - contabo"
 subcategory: ""
 description: |-
-  Reads a role, built-in or custom, by id or name. Built-in roles include S3 Read and S3 Read and Write.
+  This data source reads one role by id or by name. The role can be a custom role or a role that Contabo provides, for example S3 Read or S3 Read and Write.
 ---
 
 # contabo_role (Data Source)
 
-Reads a role, built-in or custom, by id or name. Built-in roles include `S3 Read` and `S3 Read and Write`.
+This data source reads one role by id or by name. The role can be a custom role or a role that Contabo provides, for example `S3 Read` or `S3 Read and Write`.
 
 ## Example Usage
 
@@ -24,15 +24,15 @@ data "contabo_role" "s3_read" {
 
 ### Optional
 
-- `id` (String) Id of the role.
-- `name` (String) Name of the role. It must match exactly one role.
+- `id` (String) The id of the role.
+- `name` (String) The name of the role. Exactly one role must have this name.
 
 ### Read-Only
 
-- `access_all_resources` (Boolean) Whether the permissions apply to all resources.
-- `admin` (Boolean) Whether the role grants access to everything.
-- `permission` (Set of Object) API permissions of the role. (see [below for nested schema](#nestedatt--permission))
-- `type` (String) `default` or `custom`.
+- `access_all_resources` (Boolean) Whether the permissions of the role apply to all resources.
+- `admin` (Boolean) Whether the role gives access to every API endpoint and to every resource.
+- `permission` (Set of Object) The API permissions of the role. (see [below for nested schema](#nestedatt--permission))
+- `type` (String) The type of the role. The value is `default` or `custom`.
 
 <a id="nestedatt--permission"></a>
 ### Nested Schema for `permission`

@@ -3,12 +3,12 @@
 page_title: "contabo_vip_assignment Resource - contabo"
 subcategory: ""
 description: |-
-  Assigns a virtual IP (an additional or floating IPv4 address bought as an add-on) to an instance or a bare metal server. VIPs are ordered in the customer control panel or with the add_ons of an instance; this resource only manages the assignment. Destroying it unassigns the IP.
+  This resource assigns a virtual IP address (VIP) to an instance or to a bare metal server. A virtual IP address is an additional or floating IPv4 address that you buy as an add-on. You order virtual IP addresses in the Customer Control Panel or with the add_ons setting of an instance. This resource only manages the assignment of the address. When Terraform destroys this resource, the provider removes the address from the instance.
 ---
 
 # contabo_vip_assignment (Resource)
 
-Assigns a virtual IP (an additional or floating IPv4 address bought as an add-on) to an instance or a bare metal server. VIPs are ordered in the customer control panel or with the `add_ons` of an instance; this resource only manages the assignment. Destroying it unassigns the IP.
+This resource assigns a virtual IP address (VIP) to an instance or to a bare metal server. A virtual IP address is an additional or floating IPv4 address that you buy as an add-on. You order virtual IP addresses in the Customer Control Panel or with the `add_ons` setting of an instance. This resource only manages the assignment of the address. When Terraform destroys this resource, the provider removes the address from the instance.
 
 ## Example Usage
 
@@ -29,22 +29,22 @@ resource "contabo_vip_assignment" "api" {
 
 ### Required
 
-- `ip` (String) The virtual IPv4 address. It is also the id of the resource.
-- `resource_id` (String) Id of the instance or bare metal server.
+- `ip` (String) The virtual IPv4 address. This address is also the id of the resource.
+- `resource_id` (String) The id of the instance or the bare metal server that gets the IP address.
 
 ### Optional
 
-- `resource_type` (String) Type of the resource to assign the IP to: `instances` or `bare-metal`. Defaults to `instances`.
+- `resource_type` (String) The type of the resource that gets the IP address. The value is `instances` or `bare-metal`. The default value is `instances`.
 
 ### Read-Only
 
-- `data_center` (String) Data center of the VIP.
-- `gateway` (String) Gateway of the VIP.
+- `data_center` (String) The data center of the virtual IP address.
+- `gateway` (String) The IP address of the gateway for the virtual IP address.
 - `id` (String) The ID of this resource.
-- `netmask_cidr` (Number) Netmask of the VIP in CIDR notation.
-- `region` (String) Region of the VIP.
-- `type` (String) Type of the VIP: `additional` or `floating`.
-- `vip_id` (String) Id of the VIP.
+- `netmask_cidr` (Number) The size of the network mask of the virtual IP address in CIDR notation.
+- `region` (String) The region of the virtual IP address.
+- `type` (String) The type of the virtual IP address. The value is `additional` or `floating`.
+- `vip_id` (String) The id of the virtual IP address.
 
 ## Import
 

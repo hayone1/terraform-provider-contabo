@@ -3,12 +3,12 @@
 page_title: "contabo_instance_available_products Data Source - contabo"
 subcategory: ""
 description: |-
-  Lists the products an existing instance can be upgraded to. Upgrades are done in the customer control panel; this data source shows the options and prices.
+  This data source lists the products that an existing instance can be upgraded to. You make the upgrade in the Customer Control Panel. This data source shows the options and the prices.
 ---
 
 # contabo_instance_available_products (Data Source)
 
-Lists the products an existing instance can be upgraded to. Upgrades are done in the customer control panel; this data source shows the options and prices.
+This data source lists the products that an existing instance can be upgraded to. You make the upgrade in the Customer Control Panel. This data source shows the options and the prices.
 
 ## Example Usage
 
@@ -27,12 +27,12 @@ output "upgrade_options" {
 
 ### Required
 
-- `instance_id` (String) Id of the instance.
+- `instance_id` (String) The id of the instance.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `products` (List of Object) Products the instance can move to. (see [below for nested schema](#nestedatt--products))
+- `products` (List of Object) The products that the instance can be upgraded to. (see [below for nested schema](#nestedatt--products))
 
 <a id="nestedatt--products"></a>
 ### Nested Schema for `products`

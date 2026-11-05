@@ -3,12 +3,12 @@
 page_title: "contabo_firewall Resource - contabo"
 subcategory: ""
 description: |-
-  Manages a firewall and the instances it protects. Firewalls are free and work on every instance.
+  This resource manages a firewall and the instances that the firewall protects. Firewalls are free, and a firewall works on every instance. The API adds a rule to the end of every firewall that blocks all other inbound traffic. The provider does not show that rule.
 ---
 
 # contabo_firewall (Resource)
 
-Manages a firewall and the instances it protects. Firewalls are free and work on every instance.
+This resource manages a firewall and the instances that the firewall protects. Firewalls are free, and a firewall works on every instance. The API adds a rule to the end of every firewall that blocks all other inbound traffic. The provider does not show that rule.
 
 ## Example Usage
 
@@ -63,41 +63,41 @@ resource "contabo_firewall" "web" {
 
 - `created_date` (String) The creation date of the Firewall.
 - `description` (String) The description of the Firewall. There is a limit of 255 characters per Firewall.
-- `instance_ids` (Set of Number) Ids of the instances the firewall applies to. Leave empty for a firewall without instances. The provider waits until each instance is running before it assigns it.
-- `rules` (Block List, Max: 1) Rules of the firewall. (see [below for nested schema](#nestedblock--rules))
+- `instance_ids` (Set of Number) The ids of the instances that the firewall protects. Leave the list empty for a firewall without instances. Before the provider adds an instance to the firewall, the provider waits until the instance is running.
+- `rules` (Block List, Max: 1) The rules of the firewall. (see [below for nested schema](#nestedblock--rules))
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 
 ### Read-Only
 
 - `id` (String) The identifier of the Firewall. Use it to manage it!
-- `instances_status` (List of Object) The status of every instance in the firewall. (see [below for nested schema](#nestedatt--instances_status))
+- `instances_status` (List of Object) The status of the firewall on every instance that the firewall protects. (see [below for nested schema](#nestedatt--instances_status))
 
 <a id="nestedblock--rules"></a>
 ### Nested Schema for `rules`
 
 Optional:
 
-- `inbound` (Block List) Inbound rules. Traffic that no active rule accepts is dropped. (see [below for nested schema](#nestedblock--rules--inbound))
+- `inbound` (Block List) The inbound rules of the firewall. The firewall drops all inbound traffic that no active rule accepts. (see [below for nested schema](#nestedblock--rules--inbound))
 
 <a id="nestedblock--rules--inbound"></a>
 ### Nested Schema for `rules.inbound`
 
 Optional:
 
-- `action` (String) Action of the rule, for example `accept` or `drop`. Defaults to `accept`.
-- `dest_ports` (Set of String) Destination ports or port ranges, for example `22` or `8000-8080`. Empty means every port.
-- `display_name` (String) Name of the rule shown in the customer control panel.
-- `protocol` (String) Protocol of the rule: `tcp`, `udp`, `icmp`, or `any` for every protocol.
-- `src_cidr` (Block List) Source addresses the rule applies to. (see [below for nested schema](#nestedblock--rules--inbound--src_cidr))
-- `status` (String) Status of the rule: `active` or `inactive`. Defaults to `active`.
+- `action` (String) The action of the rule, for example `accept` or `drop`. The default value is `accept`.
+- `dest_ports` (Set of String) The destination ports or port ranges of the rule, for example `22` or `8000-8080`. When the list is empty, the rule applies to every port.
+- `display_name` (String) The name of the rule. The Customer Control Panel shows this name.
+- `protocol` (String) The protocol of the rule. The value is `tcp`, `udp`, `icmp`, or `any` for every protocol.
+- `src_cidr` (Block List) The source addresses that the rule applies to. (see [below for nested schema](#nestedblock--rules--inbound--src_cidr))
+- `status` (String) The status of the rule. The value is `active` or `inactive`. The default value is `active`.
 
 <a id="nestedblock--rules--inbound--src_cidr"></a>
 ### Nested Schema for `rules.inbound.src_cidr`
 
 Optional:
 
-- `ipv4` (Set of String) IPv4 addresses or CIDR ranges, for example `0.0.0.0/0`.
-- `ipv6` (Set of String) IPv6 addresses or CIDR ranges, for example `::/0`.
+- `ipv4` (Set of String) The IPv4 addresses or CIDR ranges, for example `0.0.0.0/0`.
+- `ipv6` (Set of String) The IPv6 addresses or CIDR ranges, for example `::/0`.
 
 
 

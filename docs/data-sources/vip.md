@@ -3,12 +3,12 @@
 page_title: "contabo_vip Data Source - contabo"
 subcategory: ""
 description: |-
-  Reads a virtual IP (additional or floating IPv4 address) by its address.
+  This data source reads one virtual IP address. A virtual IP address is an additional or floating IPv4 address.
 ---
 
 # contabo_vip (Data Source)
 
-Reads a virtual IP (additional or floating IPv4 address) by its address.
+This data source reads one virtual IP address. A virtual IP address is an additional or floating IPv4 address.
 
 ## Example Usage
 
@@ -23,21 +23,21 @@ data "contabo_vip" "api" {
 
 ### Required
 
-- `ip` (String) The IPv4 address of the VIP.
+- `ip` (String) The virtual IPv4 address that the data source reads.
 
 ### Read-Only
 
-- `broadcast` (String) Broadcast address.
-- `data_center` (String) Data center of the VIP.
-- `gateway` (String) Gateway.
+- `broadcast` (String) The broadcast address.
+- `data_center` (String) The data center of the virtual IP address.
+- `gateway` (String) The IP address of the gateway.
 - `id` (String) The ID of this resource.
-- `ip_version` (String) IP version, `v4`.
-- `netmask_cidr` (Number) Netmask in CIDR notation.
-- `network` (String) Network address.
-- `region` (String) Region of the VIP.
-- `resource_display_name` (String) Display name of the resource the VIP is assigned to.
-- `resource_id` (String) Id of the resource the VIP is assigned to, empty when unassigned.
-- `resource_name` (String) Name of the resource the VIP is assigned to.
-- `resource_type` (String) Type of the resource the VIP is assigned to, empty when unassigned.
-- `type` (String) Type of the VIP: `additional` or `floating`.
-- `vip_id` (String) Id of the VIP.
+- `ip_version` (String) The IP version of the address. The value is always `v4`.
+- `netmask_cidr` (Number) The size of the network mask in CIDR notation.
+- `network` (String) The network address.
+- `region` (String) The region of the virtual IP address.
+- `resource_display_name` (String) The display name of the resource that uses the address.
+- `resource_id` (String) The id of the resource that uses the address. The value is empty when no resource uses the address.
+- `resource_name` (String) The name of the resource that uses the address.
+- `resource_type` (String) The type of the resource that uses the address. The value is empty when no resource uses the address.
+- `type` (String) The type of the virtual IP address. The value is `additional` or `floating`.
+- `vip_id` (String) The id of the virtual IP address.

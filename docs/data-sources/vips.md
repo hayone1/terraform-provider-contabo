@@ -3,12 +3,12 @@
 page_title: "contabo_vips Data Source - contabo"
 subcategory: ""
 description: |-
-  Lists the virtual IPs (additional and floating IPv4 addresses) of the account, optionally filtered.
+  This data source lists the virtual IP addresses of your account. Virtual IP addresses are additional or floating IPv4 addresses. You can filter the list.
 ---
 
 # contabo_vips (Data Source)
 
-Lists the virtual IPs (additional and floating IPv4 addresses) of the account, optionally filtered.
+This data source lists the virtual IP addresses of your account. Virtual IP addresses are additional or floating IPv4 addresses. You can filter the list.
 
 ## Example Usage
 
@@ -25,16 +25,16 @@ data "contabo_vips" "free" {
 
 ### Optional
 
-- `region` (String) Only VIPs in this region.
-- `resource_id` (String) Only VIPs assigned to this resource.
-- `type` (String) Only VIPs of this type: `additional` or `floating`.
-- `unassigned` (Boolean) Only VIPs that are not assigned to a resource.
+- `region` (String) When you set this filter, the list only contains addresses in this region.
+- `resource_id` (String) When you set this filter, the list only contains addresses that this resource uses.
+- `type` (String) When you set this filter, the list only contains addresses of this type. The value is `additional` or `floating`.
+- `unassigned` (Boolean) When you set this value to `true`, the list only contains addresses that no resource uses.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `ips` (List of String) The matching IP addresses.
-- `vips` (List of Object) The matching VIPs. (see [below for nested schema](#nestedatt--vips))
+- `ips` (List of String) The IP addresses that match the filters.
+- `vips` (List of Object) The virtual IP addresses that match the filters, with all details. (see [below for nested schema](#nestedatt--vips))
 
 <a id="nestedatt--vips"></a>
 ### Nested Schema for `vips`

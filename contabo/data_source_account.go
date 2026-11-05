@@ -27,48 +27,48 @@ type objectStorageCredential struct {
 
 func dataSourceObjectStorageCredentials() *schema.Resource {
 	return &schema.Resource{
-		Description: "Reads the S3 credentials (access key and secret key) of the API user for object storages, so that S3 clients and the `contabo_object_storage_bucket` resource need no manually copied keys. The secret key is stored in the Terraform state.",
+		Description: "This data source reads the S3 credentials of the API user. The S3 credentials are an access key and a secret key for an object storage. With this data source, S3 clients and the `contabo_object_storage_bucket` resource do not need keys that you copy by hand. Terraform stores the secret key in the Terraform state.",
 		ReadContext: dataSourceObjectStorageCredentialsRead,
 		Schema: map[string]*schema.Schema{
 			"object_storage_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only credentials of this object storage.",
+				Description: "When you set this filter, the data source only returns the credentials of this object storage.",
 			},
 			"region": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only credentials of object storages in this region, for example `European Union`.",
+				Description: "When you set this filter, the data source only returns the credentials of object storages in this region, for example `European Union`.",
 			},
 			"user_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
-				Description: "Id of the user whose credentials to read. Defaults to the API user of the provider.",
+				Description: "The id of the user whose credentials the data source reads. When you do not set this value, the data source uses the API user of the provider.",
 			},
 			"access_key": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Access key of the first matching credential.",
+				Description: "The access key of the first credential that matches the filters.",
 			},
 			"secret_key": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Sensitive:   true,
-				Description: "Secret key of the first matching credential.",
+				Description: "The secret key of the first credential that matches the filters.",
 			},
 			"credentials": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "All matching credentials.",
+				Description: "All credentials that match the filters.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"credential_id":     {Type: schema.TypeInt, Computed: true, Description: "Id of the credential."},
-						"access_key":        {Type: schema.TypeString, Computed: true, Description: "S3 access key."},
-						"secret_key":        {Type: schema.TypeString, Computed: true, Sensitive: true, Description: "S3 secret key."},
-						"object_storage_id": {Type: schema.TypeString, Computed: true, Description: "Id of the object storage."},
-						"display_name":      {Type: schema.TypeString, Computed: true, Description: "Display name of the object storage."},
-						"region":            {Type: schema.TypeString, Computed: true, Description: "Region of the object storage."},
+						"credential_id":     {Type: schema.TypeInt, Computed: true, Description: "The id of the credential."},
+						"access_key":        {Type: schema.TypeString, Computed: true, Description: "The S3 access key."},
+						"secret_key":        {Type: schema.TypeString, Computed: true, Sensitive: true, Description: "The S3 secret key."},
+						"object_storage_id": {Type: schema.TypeString, Computed: true, Description: "The id of the object storage."},
+						"display_name":      {Type: schema.TypeString, Computed: true, Description: "The display name of the object storage."},
+						"region":            {Type: schema.TypeString, Computed: true, Description: "The region of the object storage."},
 					},
 				},
 			},
@@ -147,13 +147,13 @@ func dataSourceObjectStorageCredentialsRead(ctx context.Context, d *schema.Resou
 
 func dataSourceImageStats() *schema.Resource {
 	return &schema.Resource{
-		Description: "Reads the usage of the custom image storage of the account. Custom image storage is an account-wide add-on; check `free_size_mb` before uploading an image with `contabo_image`.",
+		Description: "This data source reads how much custom image storage your account uses. Custom image storage is an add-on for the whole account. Check `free_size_mb` before you upload an image with the `contabo_image` resource.",
 		ReadContext: dataSourceImageStatsRead,
 		Schema: map[string]*schema.Schema{
-			"current_images_count": {Type: schema.TypeInt, Computed: true, Description: "Number of custom images."},
-			"total_size_mb":        {Type: schema.TypeInt, Computed: true, Description: "Size of the custom image storage in megabytes. 0 when the account has no custom image storage."},
-			"used_size_mb":         {Type: schema.TypeInt, Computed: true, Description: "Used custom image storage in megabytes."},
-			"free_size_mb":         {Type: schema.TypeInt, Computed: true, Description: "Free custom image storage in megabytes."},
+			"current_images_count": {Type: schema.TypeInt, Computed: true, Description: "The number of custom images in your account."},
+			"total_size_mb":        {Type: schema.TypeInt, Computed: true, Description: "The size of the custom image storage in megabytes. The value is 0 when your account has no custom image storage."},
+			"used_size_mb":         {Type: schema.TypeInt, Computed: true, Description: "The used part of the custom image storage in megabytes."},
+			"free_size_mb":         {Type: schema.TypeInt, Computed: true, Description: "The free part of the custom image storage in megabytes."},
 		},
 	}
 }
@@ -214,38 +214,38 @@ func dataSourceInstanceAvailableProducts() *schema.Resource {
 		return &schema.Schema{Type: t, Computed: true, Description: description}
 	}
 	return &schema.Resource{
-		Description: "Lists the products an existing instance can be upgraded to. Upgrades are done in the customer control panel; this data source shows the options and prices.",
+		Description: "This data source lists the products that an existing instance can be upgraded to. You make the upgrade in the Customer Control Panel. This data source shows the options and the prices.",
 		ReadContext: dataSourceInstanceAvailableProductsRead,
 		Schema: map[string]*schema.Schema{
 			"instance_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Id of the instance.",
+				Description: "The id of the instance.",
 			},
 			"products": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "Products the instance can move to.",
+				Description: "The products that the instance can be upgraded to.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"product_id":                     computed(schema.TypeString, "Product id, for example `V154`."),
-						"name":                           computed(schema.TypeString, "Product name."),
-						"frontend_name":                  computed(schema.TypeString, "Product name shown in the customer control panel."),
-						"category":                       computed(schema.TypeString, "Product category, for example `ssd` or `nvme`."),
-						"ram_size_gb":                    computed(schema.TypeInt, "RAM in gigabytes."),
-						"disk_size_gb":                   computed(schema.TypeInt, "Disk size in gigabytes."),
-						"cpu_cores":                      computed(schema.TypeInt, "CPU cores."),
-						"net_speed":                      computed(schema.TypeInt, "Network speed in Mbit/s."),
-						"snapshots":                      computed(schema.TypeInt, "Number of snapshots included."),
-						"monthly_price":                  computed(schema.TypeFloat, "Monthly price of the product."),
-						"current":                        computed(schema.TypeBool, "Whether this is the current product of the instance."),
+						"product_id":                     computed(schema.TypeString, "The product id, for example `V154`."),
+						"name":                           computed(schema.TypeString, "The name of the product."),
+						"frontend_name":                  computed(schema.TypeString, "The name of the product that the Customer Control Panel shows."),
+						"category":                       computed(schema.TypeString, "The category of the product, for example `ssd` or `nvme`."),
+						"ram_size_gb":                    computed(schema.TypeInt, "The size of the memory (RAM) in gigabytes."),
+						"disk_size_gb":                   computed(schema.TypeInt, "The size of the disk in gigabytes."),
+						"cpu_cores":                      computed(schema.TypeInt, "The number of CPU cores."),
+						"net_speed":                      computed(schema.TypeInt, "The network speed in Mbit/s."),
+						"snapshots":                      computed(schema.TypeInt, "The number of snapshots that the product includes."),
+						"monthly_price":                  computed(schema.TypeFloat, "The monthly price of the product."),
+						"current":                        computed(schema.TypeBool, "Whether this product is the current product of the instance."),
 						"location_change_required":       computed(schema.TypeBool, "Whether the upgrade moves the instance to another location."),
 						"live_migration_available":       computed(schema.TypeBool, "Whether the upgrade can run without downtime."),
-						"live_migration_disabled_reason": computed(schema.TypeString, "Why live migration is not available."),
-						"storage_extension_available":    computed(schema.TypeBool, "Whether a storage extension can be added."),
-						"backup_available":               computed(schema.TypeBool, "Whether automated backup is available."),
-						"price_difference":               computed(schema.TypeFloat, "Price difference of the upgrade without storage extension."),
-						"price_difference_with_storage":  computed(schema.TypeFloat, "Price difference of the upgrade with storage extension."),
+						"live_migration_disabled_reason": computed(schema.TypeString, "The reason why the upgrade cannot run without downtime."),
+						"storage_extension_available":    computed(schema.TypeBool, "Whether you can add a storage extension to the product."),
+						"backup_available":               computed(schema.TypeBool, "Whether automated backups are available for the product."),
+						"price_difference":               computed(schema.TypeFloat, "The price difference of the upgrade without a storage extension."),
+						"price_difference_with_storage":  computed(schema.TypeFloat, "The price difference of the upgrade with a storage extension."),
 					},
 				},
 			},
@@ -304,17 +304,17 @@ func dataSourceInstanceAvailableProductsRead(ctx context.Context, d *schema.Reso
 
 func dataSourceInstanceVnc() *schema.Resource {
 	return &schema.Resource{
-		Description: "Reads the VNC console settings of an instance.",
+		Description: "This data source reads the VNC console settings of an instance.",
 		ReadContext: dataSourceInstanceVncRead,
 		Schema: map[string]*schema.Schema{
 			"instance_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Id of the instance.",
+				Description: "The id of the instance.",
 			},
-			"enabled":  {Type: schema.TypeBool, Computed: true, Description: "Whether VNC is enabled."},
-			"vnc_ip":   {Type: schema.TypeString, Computed: true, Description: "IP address of the VNC console."},
-			"vnc_port": {Type: schema.TypeInt, Computed: true, Description: "Port of the VNC console."},
+			"enabled":  {Type: schema.TypeBool, Computed: true, Description: "Whether the VNC console of the instance is enabled."},
+			"vnc_ip":   {Type: schema.TypeString, Computed: true, Description: "The IP address of the VNC console."},
+			"vnc_port": {Type: schema.TypeInt, Computed: true, Description: "The port of the VNC console."},
 		},
 	}
 }

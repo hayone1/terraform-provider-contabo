@@ -3,12 +3,12 @@
 page_title: "contabo_api_permissions Data Source - contabo"
 subcategory: ""
 description: |-
-  Lists the API endpoints that roles can grant permissions on, with the actions each allows.
+  This data source lists the API endpoints that a role can give permissions for. For each API endpoint, the data source lists the actions that the endpoint allows.
 ---
 
 # contabo_api_permissions (Data Source)
 
-Lists the API endpoints that roles can grant permissions on, with the actions each allows.
+This data source lists the API endpoints that a role can give permissions for. For each API endpoint, the data source lists the actions that the endpoint allows.
 
 ## Example Usage
 
@@ -24,12 +24,12 @@ data "contabo_api_permissions" "dns" {
 
 ### Optional
 
-- `api_name_prefix` (String) Only API names that start with this prefix, for example `/v1/dns`.
+- `api_name_prefix` (String) When you set this filter, the list only contains API names that start with this text, for example `/v1/dns`.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `permissions` (List of Object) The API permissions, sorted by API name. (see [below for nested schema](#nestedatt--permissions))
+- `permissions` (List of Object) The API permissions, sorted by the API name. (see [below for nested schema](#nestedatt--permissions))
 
 <a id="nestedatt--permissions"></a>
 ### Nested Schema for `permissions`

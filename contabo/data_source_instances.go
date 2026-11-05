@@ -18,79 +18,79 @@ func dataSourceInstances() *schema.Resource {
 	instanceAttributes["id"] = &schema.Schema{
 		Type:        schema.TypeString,
 		Computed:    true,
-		Description: "The identifier of the compute instance.",
+		Description: "The id of the instance.",
 	}
 	instanceAttributes["tag_ids"] = &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
 		Elem:        &schema.Schema{Type: schema.TypeInt},
-		Description: "Ids of the tags assigned to the instance. Only set when the `tag_ids` filter is used.",
+		Description: "The ids of the tags from the `tag_ids` filter. The list is empty when you do not use the `tag_ids` filter.",
 	}
 
 	return &schema.Resource{
-		Description: "Lists compute instances, optionally filtered. All filters must match. Use it to look up existing instances, for example to adopt them with `terraform import`.",
+		Description: "This data source lists compute instances. You can filter the list, and an instance must match every filter that you set. Use this data source to find existing instances, for example before you import the instances with `terraform import`.",
 		ReadContext: dataSourceInstancesRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only instances with this name, for example `vmi123456`.",
+				Description: "When you set this filter, the list only contains the instance with this name, for example `vmi123456`.",
 			},
 			"display_name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only instances with exactly this display name.",
+				Description: "When you set this filter, the list only contains instances with exactly this display name.",
 			},
 			"display_name_prefix": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only instances whose display name starts with this prefix.",
+				Description: "When you set this filter, the list only contains instances whose display name starts with this text.",
 			},
 			"region": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only instances in this region, for example `EU`.",
+				Description: "When you set this filter, the list only contains instances in this region, for example `EU`.",
 			},
 			"product_ids": {
 				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "Only instances of these products.",
+				Description: "When you set this filter, the list only contains instances of these products, for example `V153`.",
 			},
 			"product_types": {
 				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "Only instances of these product types, for example `ssd` or `nvme`.",
+				Description: "When you set this filter, the list only contains instances of these product types, for example `ssd` or `nvme`.",
 			},
 			"statuses": {
 				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "Only instances with one of these statuses, for example `running`.",
+				Description: "When you set this filter, the list only contains instances with one of these statuses, for example `running`.",
 			},
 			"tag_ids": {
 				Type:        schema.TypeSet,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
-				Description: "Only instances that have all of these tags.",
+				Description: "When you set this filter, the list only contains instances that have every one of these tags.",
 			},
 			"include_cancelled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Whether to include instances that have a cancellation date. Defaults to `true`.",
+				Description: "Whether the list contains instances that have a cancellation date. The default value is `true`.",
 			},
 			"ids": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "Ids of the matching instances, sorted.",
+				Description: "The ids of the instances that match the filters, sorted from the lowest id to the highest id.",
 			},
 			"instances": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "The matching instances, sorted by id.",
+				Description: "The instances that match the filters, sorted by id.",
 				Elem:        &schema.Resource{Schema: instanceAttributes},
 			},
 		},

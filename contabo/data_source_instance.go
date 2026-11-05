@@ -19,41 +19,41 @@ func instanceComputedAttributes() map[string]*schema.Schema {
 		return &schema.Schema{Type: schema.TypeInt, Computed: true, Description: description}
 	}
 	return map[string]*schema.Schema{
-		"name":          computedString("Name of the compute instance, for example `vmi123456`."),
-		"display_name":  computedString("The instance name chosen by the customer that will be shown in the customer panel."),
-		"image_id":      computedString("Id of the image the instance was installed with."),
-		"region":        computedString("Region of the instance, for example `EU`."),
-		"region_name":   computedString("Name of the region."),
-		"data_center":   computedString("Data center of the instance."),
-		"product_id":    computedString("Product of the instance, for example `V153`."),
-		"product_name":  computedString("Name of the product."),
-		"product_type":  computedString("Category of the product, for example `ssd`, `nvme` or `vds`."),
+		"name":          computedString("The name that Contabo gave the instance, for example `vmi123456`."),
+		"display_name":  computedString("The display name of the instance. The Customer Control Panel shows this name."),
+		"image_id":      computedString("The id of the image that the instance was installed with."),
+		"region":        computedString("The region of the instance, for example `EU`."),
+		"region_name":   computedString("The full name of the region of the instance, for example `European Union`."),
+		"data_center":   computedString("The data center of the instance, for example `European Union 2`."),
+		"product_id":    computedString("The product id of the instance, for example `V153`."),
+		"product_name":  computedString("The name of the product of the instance, for example `Cloud VPS 4`."),
+		"product_type":  computedString("The category of the product of the instance, for example `ssd`, `nvme` or `vds`."),
 		"ip_config":     instanceIpConfigSchema(),
-		"mac_address":   computedString("Mac address of the instance."),
-		"ram_mb":        computedInt("RAM size in megabyte."),
-		"cpu_cores":     computedInt("CPU core count of the instance."),
-		"disk_mb":       computedInt("Disk size of the instance in megabyte."),
-		"os_type":       computedString("Type of operating system (OS) installed on the instance."),
-		"created_date":  computedString("The creation date of the compute instance."),
-		"cancel_date":   computedString("The date on which the instance will be cancelled, empty when it is not cancelled."),
-		"status":        computedString("Status of the compute instance, for example `running`, `stopped` or `installing`."),
-		"v_host_id":     computedInt("Identifier of the host system."),
-		"error_message": computedString("If the instance is in an error state, the error message."),
-		"default_user":  computedString("Default user created during the installation."),
+		"mac_address":   computedString("The MAC address of the instance."),
+		"ram_mb":        computedInt("The size of the memory (RAM) of the instance in megabytes."),
+		"cpu_cores":     computedInt("The number of CPU cores of the instance."),
+		"disk_mb":       computedInt("The size of the disk of the instance in megabytes."),
+		"os_type":       computedString("The type of operating system that is installed on the instance, for example `Linux`."),
+		"created_date":  computedString("The date when the instance was created."),
+		"cancel_date":   computedString("The date when the instance will be cancelled. The value is empty when the instance is not cancelled."),
+		"status":        computedString("The status of the instance, for example `running`, `stopped` or `installing`."),
+		"v_host_id":     computedInt("The id of the host system that runs the instance."),
+		"error_message": computedString("The error message of the instance. The value is only set when the status of the instance is `error`."),
+		"default_user":  computedString("The default user that the installation created, for example `root` or `admin`."),
 		"ssh_keys": {
 			Type:        schema.TypeList,
 			Computed:    true,
 			Elem:        &schema.Schema{Type: schema.TypeInt},
-			Description: "Secret ids of the SSH keys installed for the default user.",
+			Description: "The secret ids of the SSH keys that the installation added for the default user.",
 		},
 		"add_ons": {
 			Type:        schema.TypeList,
 			Computed:    true,
-			Description: "All add-ons of the instance.",
+			Description: "The list of all add-ons of the instance.",
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
-					"id":       computedString("Id of the add-on."),
-					"quantity": computedInt("Quantity of the add-on."),
+					"id":       computedString("The id of the add-on."),
+					"quantity": computedInt("The number of units of the add-on."),
 				},
 			},
 		},
@@ -66,27 +66,27 @@ func dataSourceInstance() *schema.Resource {
 	attributes["id"] = &schema.Schema{
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The identifier of the compute instance.",
+		Description: "The id of the instance that the data source reads.",
 	}
 	// Kept for compatibility with earlier versions of this data source. The
 	// API does not return these values, so they are always empty.
 	for name, description := range map[string]string{
-		"last_updated": "Deprecated: always empty.",
-		"user_data":    "Deprecated: the API does not return the user data; always empty.",
-		"license":      "Deprecated: the API does not return the license; always empty.",
+		"last_updated": "This attribute is deprecated, and the value is always empty.",
+		"user_data":    "This attribute is deprecated. The API does not return the user data, so the value is always empty.",
+		"license":      "This attribute is deprecated. The API does not return the license, so the value is always empty.",
 	} {
 		attributes[name] = &schema.Schema{Type: schema.TypeString, Computed: true, Description: description}
 	}
-	attributes["period"] = &schema.Schema{Type: schema.TypeInt, Computed: true, Description: "Deprecated: the API does not return the contract period; always 0."}
+	attributes["period"] = &schema.Schema{Type: schema.TypeInt, Computed: true, Description: "This attribute is deprecated. The API does not return the contract period, so the value is always 0."}
 	attributes["additional_ips_v4"] = &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "Additional IPv4 addresses of the instance. Same data as `additional_ips`.",
+		Description: "The additional IPv4 addresses of the instance. This attribute has the same data as `additional_ips`.",
 		Elem:        instanceIpSchema(),
 	}
 
 	return &schema.Resource{
-		Description: "Reads a compute instance by id. Use the `contabo_instances` data source to search instances.",
+		Description: "This data source reads one compute instance by the id of the instance. To search for instances, use the `contabo_instances` data source.",
 		ReadContext: dataSourceInstanceRead,
 		Schema:      attributes,
 	}

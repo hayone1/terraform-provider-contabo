@@ -34,38 +34,38 @@ func firewallRuleSchema(computedOnly bool) *schema.Resource {
 				Computed:         true,
 				Optional:         optional,
 				DiffSuppressFunc: suppressProtocol,
-				Description:      "Protocol of the rule: `tcp`, `udp`, `icmp`, or `any` for every protocol.",
+				Description:      "The protocol of the rule. The value is `tcp`, `udp`, `icmp`, or `any` for every protocol.",
 			},
 			"action": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    optional,
-				Description: "Action of the rule, for example `accept` or `drop`. Defaults to `accept`.",
+				Description: "The action of the rule, for example `accept` or `drop`. The default value is `accept`.",
 			},
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    optional,
-				Description: "Status of the rule: `active` or `inactive`. Defaults to `active`.",
+				Description: "The status of the rule. The value is `active` or `inactive`. The default value is `active`.",
 			},
 			"display_name": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    optional,
-				Description: "Name of the rule shown in the customer control panel.",
+				Description: "The name of the rule. The Customer Control Panel shows this name.",
 			},
 			"dest_ports": {
 				Type:        schema.TypeSet,
 				Computed:    computedOnly,
 				Optional:    optional,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "Destination ports or port ranges, for example `22` or `8000-8080`. Empty means every port.",
+				Description: "The destination ports or port ranges of the rule, for example `22` or `8000-8080`. When the list is empty, the rule applies to every port.",
 			},
 			"src_cidr": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Optional:    optional,
-				Description: "Source addresses the rule applies to.",
+				Description: "The source addresses that the rule applies to.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"ipv4": {
@@ -73,14 +73,14 @@ func firewallRuleSchema(computedOnly bool) *schema.Resource {
 							Elem:        &schema.Schema{Type: schema.TypeString},
 							Computed:    computedOnly,
 							Optional:    optional,
-							Description: "IPv4 addresses or CIDR ranges, for example `0.0.0.0/0`.",
+							Description: "The IPv4 addresses or CIDR ranges, for example `0.0.0.0/0`.",
 						},
 						"ipv6": {
 							Type:        schema.TypeSet,
 							Elem:        &schema.Schema{Type: schema.TypeString},
 							Computed:    computedOnly,
 							Optional:    optional,
-							Description: "IPv6 addresses or CIDR ranges, for example `::/0`.",
+							Description: "The IPv6 addresses or CIDR ranges, for example `::/0`.",
 						},
 					},
 				},
@@ -93,23 +93,23 @@ func firewallInstancesStatusSchema() *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeList,
 		Computed:    true,
-		Description: "The status of every instance in the firewall.",
+		Description: "The status of the firewall on every instance that the firewall protects.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"instance_id": {
 					Type:        schema.TypeInt,
 					Computed:    true,
-					Description: "The instance id.",
+					Description: "The id of the instance.",
 				},
 				"status": {
 					Type:        schema.TypeString,
 					Computed:    true,
-					Description: "Status of the firewall on the instance.",
+					Description: "The status of the firewall on the instance.",
 				},
 				"error_message": {
 					Type:        schema.TypeString,
 					Computed:    true,
-					Description: "Error message when the firewall could not be applied to the instance.",
+					Description: "The error message when the firewall could not be applied to the instance.",
 				},
 			},
 		},
@@ -118,7 +118,7 @@ func firewallInstancesStatusSchema() *schema.Schema {
 
 func resourceFirewall() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manages a firewall and the instances it protects. Firewalls are free and work on every instance.",
+		Description:   "This resource manages a firewall and the instances that the firewall protects. Firewalls are free, and a firewall works on every instance. The API adds a rule to the end of every firewall that blocks all other inbound traffic. The provider does not show that rule.",
 		CreateContext: resourceFirewallCreate,
 		UpdateContext: resourceFirewallUpdate,
 		ReadContext:   resourceFirewallRead,
@@ -165,7 +165,7 @@ func resourceFirewall() *schema.Resource {
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 				Optional:    true,
-				Description: "Ids of the instances the firewall applies to. Leave empty for a firewall without instances. The provider waits until each instance is running before it assigns it.",
+				Description: "The ids of the instances that the firewall protects. Leave the list empty for a firewall without instances. Before the provider adds an instance to the firewall, the provider waits until the instance is running.",
 			},
 			"instances_status": firewallInstancesStatusSchema(),
 			"rules": {
@@ -173,13 +173,13 @@ func resourceFirewall() *schema.Resource {
 				Computed:    true,
 				Optional:    true,
 				MaxItems:    1,
-				Description: "Rules of the firewall.",
+				Description: "The rules of the firewall.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"inbound": {
 							Type:        schema.TypeList,
 							Optional:    true,
-							Description: "Inbound rules. Traffic that no active rule accepts is dropped.",
+							Description: "The inbound rules of the firewall. The firewall drops all inbound traffic that no active rule accepts.",
 							Elem:        firewallRuleSchema(false),
 						},
 					},

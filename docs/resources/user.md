@@ -3,12 +3,12 @@
 page_title: "contabo_user Resource - contabo"
 subcategory: ""
 description: |-
-  Manages a user of the customer account. The API sends the user an email to set a password; with it, the user gets their own API credentials limited to the permissions of their roles. Destroying the resource deletes the user. The account owner cannot be managed here.
+  This resource manages a user of your Contabo account. The API sends the new user an email with a link to set a password. With the password, the user gets API credentials. The API credentials of the user only allow what the roles of the user allow. When Terraform destroys this resource, the provider deletes the user. This resource cannot manage the owner of the account.
 ---
 
 # contabo_user (Resource)
 
-Manages a user of the customer account. The API sends the user an email to set a password; with it, the user gets their own API credentials limited to the permissions of their roles. Destroying the resource deletes the user. The account owner cannot be managed here.
+This resource manages a user of your Contabo account. The API sends the new user an email with a link to set a password. With the password, the user gets API credentials. The API credentials of the user only allow what the roles of the user allow. When Terraform destroys this resource, the provider deletes the user. This resource cannot manage the owner of the account.
 
 ## Example Usage
 
@@ -28,24 +28,24 @@ resource "contabo_user" "dns_bot" {
 
 ### Required
 
-- `email` (String) Email address of the user. Activation and password reset links are sent to it. Changing it creates a new user.
-- `first_name` (String) First name of the user.
-- `last_name` (String) Last name of the user.
+- `email` (String) The email address of the user. Contabo sends the activation link and the password reset links to this address. When you change the email address, Terraform creates a new user.
+- `first_name` (String) The first name of the user.
+- `last_name` (String) The last name of the user.
 
 ### Optional
 
-- `enabled` (Boolean) Whether the user can log in. Defaults to `true`.
-- `locale` (String) Locale of the user: `de-DE`, `de`, `en-US`, `en`, `es-ES`, `es`, `pt-BR` or `pt`. Defaults to `en`.
-- `roles` (Set of Number) Ids of the roles of the user, for example from `contabo_role`.
-- `secondary_email` (Boolean) Whether two-factor authentication with a code sent to a secondary email address is enabled. Defaults to `false`.
-- `send_invoice_email` (Boolean) Whether the user receives invoice emails. Defaults to `false`.
-- `totp` (Boolean) Whether two-factor authentication with a time-based one-time password is enabled. Defaults to `false`.
+- `enabled` (Boolean) Whether the user can log in. The default value is `true`.
+- `locale` (String) The language setting of the user. The value is `de-DE`, `de`, `en-US`, `en`, `es-ES`, `es`, `pt-BR` or `pt`. The default value is `en`.
+- `roles` (Set of Number) The ids of the roles of the user. You can use the ids of `contabo_role` resources.
+- `secondary_email` (Boolean) Whether the user must log in with a second code that Contabo sends to a second email address. The default value is `false`.
+- `send_invoice_email` (Boolean) Whether the user receives emails with invoices. The default value is `false`.
+- `totp` (Boolean) Whether the user must log in with a second code from an authenticator app. The default value is `false`.
 
 ### Read-Only
 
-- `email_verified` (Boolean) Whether the user has verified the email address.
+- `email_verified` (Boolean) Whether the user has confirmed the email address.
 - `id` (String) The ID of this resource.
-- `owner` (Boolean) Whether the user is the account owner.
+- `owner` (Boolean) Whether the user is the owner of the account.
 
 ## Import
 

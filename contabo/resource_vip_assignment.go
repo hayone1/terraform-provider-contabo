@@ -76,7 +76,7 @@ func vipAssignmentPath(ip, resourceType, resourceId string) string {
 
 func resourceVipAssignment() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Assigns a virtual IP (an additional or floating IPv4 address bought as an add-on) to an instance or a bare metal server. VIPs are ordered in the customer control panel or with the `add_ons` of an instance; this resource only manages the assignment. Destroying it unassigns the IP.",
+		Description:   "This resource assigns a virtual IP address (VIP) to an instance or to a bare metal server. A virtual IP address is an additional or floating IPv4 address that you buy as an add-on. You order virtual IP addresses in the Customer Control Panel or with the `add_ons` setting of an instance. This resource only manages the assignment of the address. When Terraform destroys this resource, the provider removes the address from the instance.",
 		CreateContext: resourceVipAssignmentCreate,
 		ReadContext:   resourceVipAssignmentRead,
 		DeleteContext: resourceVipAssignmentDelete,
@@ -89,7 +89,7 @@ func resourceVipAssignment() *schema.Resource {
 				Required:     true,
 				ForceNew:     true,
 				ValidateFunc: validation.IsIPv4Address,
-				Description:  "The virtual IPv4 address. It is also the id of the resource.",
+				Description:  "The virtual IPv4 address. This address is also the id of the resource.",
 			},
 			"resource_type": {
 				Type:         schema.TypeString,
@@ -97,43 +97,43 @@ func resourceVipAssignment() *schema.Resource {
 				ForceNew:     true,
 				Default:      "instances",
 				ValidateFunc: validation.StringInSlice([]string{"instances", "bare-metal"}, false),
-				Description:  "Type of the resource to assign the IP to: `instances` or `bare-metal`. Defaults to `instances`.",
+				Description:  "The type of the resource that gets the IP address. The value is `instances` or `bare-metal`. The default value is `instances`.",
 			},
 			"resource_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "Id of the instance or bare metal server.",
+				Description: "The id of the instance or the bare metal server that gets the IP address.",
 			},
 			"vip_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Id of the VIP.",
+				Description: "The id of the virtual IP address.",
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Type of the VIP: `additional` or `floating`.",
+				Description: "The type of the virtual IP address. The value is `additional` or `floating`.",
 			},
 			"region": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Region of the VIP.",
+				Description: "The region of the virtual IP address.",
 			},
 			"data_center": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Data center of the VIP.",
+				Description: "The data center of the virtual IP address.",
 			},
 			"netmask_cidr": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "Netmask of the VIP in CIDR notation.",
+				Description: "The size of the network mask of the virtual IP address in CIDR notation.",
 			},
 			"gateway": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Gateway of the VIP.",
+				Description: "The IP address of the gateway for the virtual IP address.",
 			},
 		},
 	}
@@ -203,20 +203,20 @@ func vipAttributes() map[string]*schema.Schema {
 		return &schema.Schema{Type: t, Computed: true, Description: description}
 	}
 	return map[string]*schema.Schema{
-		"ip":                    computed(schema.TypeString, "The IPv4 address."),
-		"vip_id":                computed(schema.TypeString, "Id of the VIP."),
-		"type":                  computed(schema.TypeString, "Type of the VIP: `additional` or `floating`."),
-		"ip_version":            computed(schema.TypeString, "IP version, `v4`."),
-		"region":                computed(schema.TypeString, "Region of the VIP."),
-		"data_center":           computed(schema.TypeString, "Data center of the VIP."),
-		"resource_id":           computed(schema.TypeString, "Id of the resource the VIP is assigned to, empty when unassigned."),
-		"resource_type":         computed(schema.TypeString, "Type of the resource the VIP is assigned to, empty when unassigned."),
-		"resource_name":         computed(schema.TypeString, "Name of the resource the VIP is assigned to."),
-		"resource_display_name": computed(schema.TypeString, "Display name of the resource the VIP is assigned to."),
-		"netmask_cidr":          computed(schema.TypeInt, "Netmask in CIDR notation."),
-		"gateway":               computed(schema.TypeString, "Gateway."),
-		"network":               computed(schema.TypeString, "Network address."),
-		"broadcast":             computed(schema.TypeString, "Broadcast address."),
+		"ip":                    computed(schema.TypeString, "The virtual IPv4 address."),
+		"vip_id":                computed(schema.TypeString, "The id of the virtual IP address."),
+		"type":                  computed(schema.TypeString, "The type of the virtual IP address. The value is `additional` or `floating`."),
+		"ip_version":            computed(schema.TypeString, "The IP version of the address. The value is always `v4`."),
+		"region":                computed(schema.TypeString, "The region of the virtual IP address."),
+		"data_center":           computed(schema.TypeString, "The data center of the virtual IP address."),
+		"resource_id":           computed(schema.TypeString, "The id of the resource that uses the address. The value is empty when no resource uses the address."),
+		"resource_type":         computed(schema.TypeString, "The type of the resource that uses the address. The value is empty when no resource uses the address."),
+		"resource_name":         computed(schema.TypeString, "The name of the resource that uses the address."),
+		"resource_display_name": computed(schema.TypeString, "The display name of the resource that uses the address."),
+		"netmask_cidr":          computed(schema.TypeInt, "The size of the network mask in CIDR notation."),
+		"gateway":               computed(schema.TypeString, "The IP address of the gateway."),
+		"network":               computed(schema.TypeString, "The network address."),
+		"broadcast":             computed(schema.TypeString, "The broadcast address."),
 	}
 }
 
@@ -245,41 +245,41 @@ func flattenVip(vip vipResponse) map[string]interface{} {
 
 func dataSourceVips() *schema.Resource {
 	return &schema.Resource{
-		Description: "Lists the virtual IPs (additional and floating IPv4 addresses) of the account, optionally filtered.",
+		Description: "This data source lists the virtual IP addresses of your account. Virtual IP addresses are additional or floating IPv4 addresses. You can filter the list.",
 		ReadContext: dataSourceVipsRead,
 		Schema: map[string]*schema.Schema{
 			"type": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"additional", "floating"}, false),
-				Description:  "Only VIPs of this type: `additional` or `floating`.",
+				Description:  "When you set this filter, the list only contains addresses of this type. The value is `additional` or `floating`.",
 			},
 			"region": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only VIPs in this region.",
+				Description: "When you set this filter, the list only contains addresses in this region.",
 			},
 			"resource_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "Only VIPs assigned to this resource.",
+				Description: "When you set this filter, the list only contains addresses that this resource uses.",
 			},
 			"unassigned": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
-				Description: "Only VIPs that are not assigned to a resource.",
+				Description: "When you set this value to `true`, the list only contains addresses that no resource uses.",
 			},
 			"ips": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: "The matching IP addresses.",
+				Description: "The IP addresses that match the filters.",
 			},
 			"vips": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: "The matching VIPs.",
+				Description: "The virtual IP addresses that match the filters, with all details.",
 				Elem:        &schema.Resource{Schema: vipAttributes()},
 			},
 		},
@@ -338,10 +338,10 @@ func dataSourceVip() *schema.Resource {
 		Type:         schema.TypeString,
 		Required:     true,
 		ValidateFunc: validation.IsIPv4Address,
-		Description:  "The IPv4 address of the VIP.",
+		Description:  "The virtual IPv4 address that the data source reads.",
 	}
 	return &schema.Resource{
-		Description: "Reads a virtual IP (additional or floating IPv4 address) by its address.",
+		Description: "This data source reads one virtual IP address. A virtual IP address is an additional or floating IPv4 address.",
 		ReadContext: dataSourceVipRead,
 		Schema:      attributes,
 	}

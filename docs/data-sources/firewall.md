@@ -3,12 +3,12 @@
 page_title: "contabo_firewall Data Source - contabo"
 subcategory: ""
 description: |-
-  Reads a firewall by id or by name.
+  This data source reads one firewall by the id or by the name of the firewall.
 ---
 
 # contabo_firewall (Data Source)
 
-Reads a firewall by id or by name.
+This data source reads one firewall by the id or by the name of the firewall.
 
 ## Example Usage
 
@@ -23,17 +23,17 @@ data "contabo_firewall" "default" {
 
 ### Optional
 
-- `id` (String) The identifier of the Firewall. Set either `id` or `name`.
-- `name` (String) The name of the Firewall. Set either `id` or `name`; the name must match exactly one firewall.
+- `id` (String) The id of the firewall. Set either `id` or `name`.
+- `name` (String) The name of the firewall. Set either `id` or `name`. Exactly one firewall must have this name.
 
 ### Read-Only
 
-- `created_date` (String) The creation date of the Firewall.
-- `description` (String) The description of the Firewall.
-- `instance_ids` (Set of Number) Ids of the instances the firewall applies to.
-- `instances_status` (List of Object) The status of every instance in the firewall. (see [below for nested schema](#nestedatt--instances_status))
-- `rules` (List of Object) Rules of the firewall. (see [below for nested schema](#nestedatt--rules))
-- `status` (String) Status of the Firewall: `active` or `inactive`.
+- `created_date` (String) The date when the firewall was created.
+- `description` (String) The description of the firewall.
+- `instance_ids` (Set of Number) The ids of the instances that the firewall protects.
+- `instances_status` (List of Object) The status of the firewall on every instance that the firewall protects. (see [below for nested schema](#nestedatt--instances_status))
+- `rules` (List of Object) The rules of the firewall. (see [below for nested schema](#nestedatt--rules))
+- `status` (String) The status of the firewall. The value is `active` or `inactive`.
 
 <a id="nestedatt--instances_status"></a>
 ### Nested Schema for `instances_status`

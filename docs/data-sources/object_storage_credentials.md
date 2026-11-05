@@ -3,12 +3,12 @@
 page_title: "contabo_object_storage_credentials Data Source - contabo"
 subcategory: ""
 description: |-
-  Reads the S3 credentials (access key and secret key) of the API user for object storages, so that S3 clients and the contabo_object_storage_bucket resource need no manually copied keys. The secret key is stored in the Terraform state.
+  This data source reads the S3 credentials of the API user. The S3 credentials are an access key and a secret key for an object storage. With this data source, S3 clients and the contabo_object_storage_bucket resource do not need keys that you copy by hand. Terraform stores the secret key in the Terraform state.
 ---
 
 # contabo_object_storage_credentials (Data Source)
 
-Reads the S3 credentials (access key and secret key) of the API user for object storages, so that S3 clients and the `contabo_object_storage_bucket` resource need no manually copied keys. The secret key is stored in the Terraform state.
+This data source reads the S3 credentials of the API user. The S3 credentials are an access key and a secret key for an object storage. With this data source, S3 clients and the `contabo_object_storage_bucket` resource do not need keys that you copy by hand. Terraform stores the secret key in the Terraform state.
 
 ## Example Usage
 
@@ -33,16 +33,16 @@ output "s3_secret_key" {
 
 ### Optional
 
-- `object_storage_id` (String) Only credentials of this object storage.
-- `region` (String) Only credentials of object storages in this region, for example `European Union`.
-- `user_id` (String) Id of the user whose credentials to read. Defaults to the API user of the provider.
+- `object_storage_id` (String) When you set this filter, the data source only returns the credentials of this object storage.
+- `region` (String) When you set this filter, the data source only returns the credentials of object storages in this region, for example `European Union`.
+- `user_id` (String) The id of the user whose credentials the data source reads. When you do not set this value, the data source uses the API user of the provider.
 
 ### Read-Only
 
-- `access_key` (String) Access key of the first matching credential.
-- `credentials` (List of Object) All matching credentials. (see [below for nested schema](#nestedatt--credentials))
+- `access_key` (String) The access key of the first credential that matches the filters.
+- `credentials` (List of Object) All credentials that match the filters. (see [below for nested schema](#nestedatt--credentials))
 - `id` (String) The ID of this resource.
-- `secret_key` (String, Sensitive) Secret key of the first matching credential.
+- `secret_key` (String, Sensitive) The secret key of the first credential that matches the filters.
 
 <a id="nestedatt--credentials"></a>
 ### Nested Schema for `credentials`

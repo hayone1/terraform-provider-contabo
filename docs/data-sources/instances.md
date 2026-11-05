@@ -3,12 +3,12 @@
 page_title: "contabo_instances Data Source - contabo"
 subcategory: ""
 description: |-
-  Lists compute instances, optionally filtered. All filters must match. Use it to look up existing instances, for example to adopt them with terraform import.
+  This data source lists compute instances. You can filter the list, and an instance must match every filter that you set. Use this data source to find existing instances, for example before you import the instances with terraform import.
 ---
 
 # contabo_instances (Data Source)
 
-Lists compute instances, optionally filtered. All filters must match. Use it to look up existing instances, for example to adopt them with `terraform import`.
+This data source lists compute instances. You can filter the list, and an instance must match every filter that you set. Use this data source to find existing instances, for example before you import the instances with `terraform import`.
 
 ## Example Usage
 
@@ -30,21 +30,21 @@ output "cluster_ips" {
 
 ### Optional
 
-- `display_name` (String) Only instances with exactly this display name.
-- `display_name_prefix` (String) Only instances whose display name starts with this prefix.
-- `include_cancelled` (Boolean) Whether to include instances that have a cancellation date. Defaults to `true`.
-- `name` (String) Only instances with this name, for example `vmi123456`.
-- `product_ids` (Set of String) Only instances of these products.
-- `product_types` (Set of String) Only instances of these product types, for example `ssd` or `nvme`.
-- `region` (String) Only instances in this region, for example `EU`.
-- `statuses` (Set of String) Only instances with one of these statuses, for example `running`.
-- `tag_ids` (Set of Number) Only instances that have all of these tags.
+- `display_name` (String) When you set this filter, the list only contains instances with exactly this display name.
+- `display_name_prefix` (String) When you set this filter, the list only contains instances whose display name starts with this text.
+- `include_cancelled` (Boolean) Whether the list contains instances that have a cancellation date. The default value is `true`.
+- `name` (String) When you set this filter, the list only contains the instance with this name, for example `vmi123456`.
+- `product_ids` (Set of String) When you set this filter, the list only contains instances of these products, for example `V153`.
+- `product_types` (Set of String) When you set this filter, the list only contains instances of these product types, for example `ssd` or `nvme`.
+- `region` (String) When you set this filter, the list only contains instances in this region, for example `EU`.
+- `statuses` (Set of String) When you set this filter, the list only contains instances with one of these statuses, for example `running`.
+- `tag_ids` (Set of Number) When you set this filter, the list only contains instances that have every one of these tags.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `ids` (List of String) Ids of the matching instances, sorted.
-- `instances` (List of Object) The matching instances, sorted by id. (see [below for nested schema](#nestedatt--instances))
+- `ids` (List of String) The ids of the instances that match the filters, sorted from the lowest id to the highest id.
+- `instances` (List of Object) The instances that match the filters, sorted by id. (see [below for nested schema](#nestedatt--instances))
 
 <a id="nestedatt--instances"></a>
 ### Nested Schema for `instances`
