@@ -2,8 +2,6 @@
 .notes/
 .idea/
 .DS_Store
-openapi/
-openapi-spec.yaml
 .terraform*
 
 terraform-provider-contabo*
@@ -13,3 +11,5 @@ examples/*.tfstate.backup
 __debug_bin
 
 *.env
+build/
+dist/
