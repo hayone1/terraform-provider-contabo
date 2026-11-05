@@ -101,6 +101,10 @@ The acceptance tests need the environment variables `CNTB_API`, `CNTB_OAUTH2_TOK
 - `CNTB_TEST_PTR_IPV6` is an unused IPv6 address of one of your instances, for example `<instance /64 prefix>::100`. The test creates a PTR record for this address and deletes the PTR record at the end.
 - `CNTB_TEST_PTR_IPV4` is an IPv4 address of one of your instances. The test changes the PTR record of this address and restores the old PTR record at the end.
 
+### Releases
+
+The file [RELEASING.md](RELEASING.md) explains how to create the signing key, how to publish a release, and how to publish the provider on the Terraform Registry and the OpenTofu Registry.
+
 ### The two repositories
 
 The work happens in two repositories:
