@@ -3,6 +3,7 @@ package contabo
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -55,6 +56,14 @@ data "contabo_vip" "api" {
 				Check:  resource.TestCheckResourceAttr("contabo_vip_assignment.api", "resource_id", fmt.Sprint(otherId)),
 			},
 			{
+				// The import steps use a configuration without data sources,
+				// which older SDK versions cannot match during the import check.
+				Config: api.providerConfig() + fmt.Sprintf(`
+resource "contabo_vip_assignment" "api" {
+  ip          = "198.51.100.20"
+  resource_id = "%d"
+}
+`, otherId),
 				ResourceName:      "contabo_vip_assignment.api",
 				ImportState:       true,
 				ImportStateVerify: true,
@@ -131,11 +140,15 @@ data "contabo_users" "all" {
 				),
 			},
 			{
+				// The import steps use a configuration without data sources,
+				// which older SDK versions cannot match during the import check.
+				Config:            resourcesOnly(config(`"READ", "UPDATE"`, "Dns2")),
 				ResourceName:      "contabo_role.dns",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
 			{
+				Config:            resourcesOnly(config(`"READ", "UPDATE"`, "Dns2")),
 				ResourceName:      "contabo_user.dns",
 				ImportState:       true,
 				ImportStateVerify: true,
@@ -299,4 +312,23 @@ resource "contabo_instance_vnc" "vnc" {
 			},
 		},
 	})
+}
+
+// resourcesOnly removes the data blocks from a test configuration. Data
+// blocks in these tests are flat and end with a closing brace in column 0.
+func resourcesOnly(config string) string {
+	var out []string
+	skipping := false
+	for _, line := range strings.Split(config, "\n") {
+		if strings.HasPrefix(line, "data \"") {
+			skipping = true
+		}
+		if !skipping {
+			out = append(out, line)
+		}
+		if skipping && line == "}" {
+			skipping = false
+		}
+	}
+	return strings.Join(out, "\n")
 }
