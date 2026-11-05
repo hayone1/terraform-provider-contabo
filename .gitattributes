@@ -1,0 +1,3 @@
+* text=auto eol=lf
+openapi/** linguist-generated=true
+spec/** linguist-generated=true

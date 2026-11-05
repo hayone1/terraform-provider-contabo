@@ -109,7 +109,7 @@ data "contabo_firewall" "by_name" {
 					resource.TestCheckResourceAttr("contabo_firewall.test", "rules.0.inbound.#", "3"),
 					resource.TestCheckResourceAttr("contabo_firewall.test", "rules.0.inbound.2.action", "drop"),
 					func(s *terraform.State) error {
-						if n := api.callCount(fmt.Sprintf("DELETE /v1/firewalls/fw-")); n != 1 {
+						if n := api.callCount("DELETE /v1/firewalls/fw-"); n != 1 {
 							return fmt.Errorf("expected one unassignment, got %d", n)
 						}
 						if n := api.callCount("POST /v1/firewalls/fw-"); n != 1 {

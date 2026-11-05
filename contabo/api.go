@@ -24,33 +24,6 @@ func newRequestId() string {
 
 // isNotFound is defined in dns_utils.go.
 
-func isSuccess(httpResp *http.Response) bool {
-	return httpResp != nil && httpResp.StatusCode >= 200 && httpResp.StatusCode < 300
-}
-
-// decodeResponse decodes the JSON body of a successful response into out.
-//
-// Use it where the generated model does not match what the API returns: the
-// generated client then fails to decode a successful response, and the raw
-// body is the only way to the data. err is the error returned by the
-// generated client; it is returned unchanged when the request itself failed.
-func decodeResponse(httpResp *http.Response, err error, out interface{}) error {
-	if !isSuccess(httpResp) {
-		if err == nil {
-			err = fmt.Errorf("unexpected API response")
-		}
-		return err
-	}
-	body := readResponseBody(httpResp)
-	if len(bytes.TrimSpace(body)) == 0 {
-		return fmt.Errorf("empty response body")
-	}
-	if decodeErr := json.Unmarshal(body, out); decodeErr != nil {
-		return fmt.Errorf("could not decode API response: %w", decodeErr)
-	}
-	return nil
-}
-
 // apiRequest sends a request with the provider's authenticated HTTP client
 // and decodes the JSON response into out (when out is not nil). It covers
 // endpoints that the generated client does not offer or models wrongly.
@@ -110,7 +83,7 @@ func apiRequest(
 		return nil, err
 	}
 	respBody, err := io.ReadAll(httpResp.Body)
-	httpResp.Body.Close()
+	_ = httpResp.Body.Close()
 	httpResp.Body = io.NopCloser(bytes.NewReader(respBody))
 	if err != nil {
 		return httpResp, err

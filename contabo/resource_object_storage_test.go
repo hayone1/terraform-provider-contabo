@@ -14,9 +14,9 @@ var displayName = (uuid.New()).String()
 
 func TestAccContaboObjectStorageBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckObjectStorageDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckObjectStorageDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testCheckContaboObjectStorageConfigBasic(),

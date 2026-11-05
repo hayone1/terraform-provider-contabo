@@ -149,7 +149,7 @@ func resourceVipAssignmentCreate(ctx context.Context, d *schema.ResourceData, m 
 	if err != nil {
 		return apiErrorDiags(httpResp, err)
 	}
-	if vip.assigned() && !(vip.ResourceId == resourceId && vip.ResourceType == resourceType) {
+	if vip.assigned() && (vip.ResourceId != resourceId || vip.ResourceType != resourceType) {
 		return diag.Errorf("VIP %s is assigned to %s %s; unassign it first", ip, vip.ResourceType, vip.ResourceId)
 	}
 	if !vip.assigned() {

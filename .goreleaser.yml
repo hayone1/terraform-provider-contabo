@@ -2,36 +2,37 @@ version: 2
 project_name: terraform-provider-contabo
 before:
   hooks:
-    - go mod tidy
     - go mod download
 builds:
-- env:
-    - CGO_ENABLED=0
-  mod_timestamp: '{{ .CommitTimestamp }}'
-  flags:
-    - -trimpath
-  ldflags:
-      - -w -s -X contabo.com/terraform-provider-contabo/cmd.version={{.Tag}} -X contabo.com/terraform-provider-contabo/cmd.commit={{.Commit}} -X contabo.com/terraform-provider-contabo/cmd.date={{.Date}}
-  goos:
-    - freebsd
-    - windows
-    - linux
-    - darwin
-  goarch:
-    - amd64
-    - '386'
-    - arm
-    - arm64
-  ignore:
-    - goos: darwin
-      goarch: '386'
-  binary: '{{ .ProjectName }}_v{{ .Version }}'
+  - env:
+      - CGO_ENABLED=0
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }} -X main.commit={{ .Commit }}
+    goos:
+      - freebsd
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - '386'
+      - arm
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: '386'
+    binary: '{{ .ProjectName }}_v{{ .Version }}'
 archives:
   - name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
-    format: zip
+    formats: [zip]
     files:
       - README.md
       - LICENSE
+      - PATCHES.md
+      - CHANGELOG.md
 checksum:
   extra_files:
     - glob: 'terraform-registry-manifest.json'
@@ -50,15 +51,13 @@ signs:
       - "${artifact}"
 changelog:
   disable: true
+# Releases go to the repository the workflow runs in.
 release:
-  github:
-    owner: contabo
-    name: terraform-provider-contabo
   extra_files:
     - glob: 'terraform-registry-manifest.json'
       name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
   draft: false
   prerelease: auto
   header: |
-
-  footer: |
+    Unofficial distribution of the Contabo Terraform provider (`hayone1/contabo`).
+    Not made by or connected to Contabo GmbH. See [CHANGELOG.md](https://github.com/hayone1/terraform-provider-contabo/blob/{{ .Tag }}/CHANGELOG.md) for the changes and [PATCHES.md](https://github.com/hayone1/terraform-provider-contabo/blob/{{ .Tag }}/PATCHES.md) for the carried patches.

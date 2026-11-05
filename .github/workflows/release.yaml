@@ -1,55 +1,45 @@
-# This GitHub action can publish assets for release when a tag is created.
-# Currently its setup to run on any tag that matches the pattern "v*" (ie. v0.1.0).
+# Builds, signs and publishes a release when a tag like v0.2.0 is pushed.
 #
-# This uses an action (crazy-max/ghaction-import-gpg) that assumes you set your 
-# private key in the `GPG_PRIVATE_KEY` secret and passphrase in the `PASSPHRASE`
-# secret. If you would rather own your own GPG handling, please fork this action
-# or use an alternative one for key handling.
-#
-# You will need to pass the `--batch` flag to `gpg` in your signing step 
-# in `goreleaser` to indicate this is being used in a non-interactive mode.
-#
+# Secrets:
+#   GPG_PRIVATE_KEY  ASCII-armored private key (RSA 4096) whose public key is
+#                    registered with the Terraform and OpenTofu registries.
+#   PASSPHRASE       Passphrase of that key.
 name: release
 on:
   push:
     tags:
       - 'v*'
+permissions:
+  contents: write
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
-    env:
-      OPENAPIURL: "https://api.contabo.com/api-v1.yaml"
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-      -
-        name: Unshallow
-        run: git fetch --prune --unshallow
-      -
-        name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
-          go-version: 1.23
-      -
-        name: Import GPG key
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - name: Unit tests
+        run: go test ./...
+      - name: Import GPG key
         id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v5
+        uses: crazy-max/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-      - 
-        name: Build openapi client 
-        run: make generate-api-clients
-        env:
-          OPENAPIVOLUME: "openapivolume:/local"
-          OUTPUTLOCATION: "/local/"
-      -
-        name: Run GoReleaser
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
+          version: '~> v2'
           args: release --clean
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-          # GitHub sets this automatically
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

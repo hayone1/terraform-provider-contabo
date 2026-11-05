@@ -13,9 +13,9 @@ import (
 
 func TestAccContaboImageBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckImageDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckImageDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testCheckContaboImageConfigBasic(),

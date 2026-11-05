@@ -11,9 +11,9 @@ import (
 
 func TestAccObjectStorageBucketBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckObjectStorageBucketDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckObjectStorageBucketDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: createBucketInEUObjectStorage(),

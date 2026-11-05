@@ -1,0 +1,20 @@
+version: "2"
+run:
+  timeout: 5m
+linters:
+  default: standard
+  settings:
+    errcheck:
+      exclude-functions:
+        - (*github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema.ResourceData).Set
+  exclusions:
+    generated: lax
+    paths:
+      - openapi
+    rules:
+      # Upstream code that the distribution keeps close to upstream to ease merges.
+      - path: contabo/oauth2Client/
+        linters: [errcheck, unused, staticcheck]
+formatters:
+  enable:
+    - gofmt

@@ -85,7 +85,7 @@ func readResponseBody(httpResp *http.Response) []byte {
 		return nil
 	}
 	body, _ := io.ReadAll(httpResp.Body)
-	httpResp.Body.Close()
+	_ = httpResp.Body.Close()
 	httpResp.Body = io.NopCloser(bytes.NewReader(body))
 	return body
 }

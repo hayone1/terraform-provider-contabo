@@ -15,9 +15,9 @@ var anotherUpdatedDisplayName = (uuid.New()).String()
 
 func TestAccContaboInstanceBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckInstanceDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: updateAndReinstallVPSCreation(),

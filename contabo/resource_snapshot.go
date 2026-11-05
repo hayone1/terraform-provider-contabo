@@ -17,7 +17,7 @@ func resourceSnapshot() *schema.Resource {
 		UpdateContext: resourceSnapshotUpdate,
 		DeleteContext: resourceSnapshotDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -81,9 +81,7 @@ func resourceSnapshotCreate(ctx context.Context, d *schema.ResourceData, m inter
 	if description != "" {
 		createSnapshotRequest.Description = &description
 	}
-	var instanceId64 int64
-
-	instanceId64 = int64(instanceId)
+	instanceId64 := int64(instanceId)
 	res, httpResp, err := client.SnapshotsApi.
 		CreateSnapshot(ctx, instanceId64).
 		XRequestId(uuid.NewV4().String()).
@@ -107,8 +105,7 @@ func resourceSnapshotRead(ctx context.Context, d *schema.ResourceData, m interfa
 	snapshotId := d.Id()
 
 	instanceId := d.Get("instance_id").(int)
-	var instanceId64 int64
-	instanceId64 = int64(instanceId)
+	instanceId64 := int64(instanceId)
 
 	res, httpResp, err := client.SnapshotsApi.
 		RetrieveSnapshot(ctx, instanceId64, snapshotId).
@@ -169,7 +166,7 @@ func resourceSnapshotDelete(ctx context.Context, d *schema.ResourceData, m inter
 	snapshotId := d.Id()
 
 	instanceId := d.Get("instance_id").(int)
-	var instanceId64 int64 = int64(instanceId)
+	instanceId64 := int64(instanceId)
 
 	httpResp, err := client.SnapshotsApi.
 		DeleteSnapshot(ctx, instanceId64, snapshotId).

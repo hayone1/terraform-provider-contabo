@@ -22,8 +22,8 @@ func TestAccContaboPrivateNetworkBasic(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPrivateNetworkDestroy,
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckPrivateNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAddInstance(),

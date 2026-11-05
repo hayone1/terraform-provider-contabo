@@ -22,34 +22,34 @@ func resourceSecret() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"created_at": &schema.Schema{
+			"created_at": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
 				Description: "The creation date of the secret.",
 			},
-			"updated_at": &schema.Schema{
+			"updated_at": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
 				Description: "Last updated time of the secret.",
 			},
-			"id": &schema.Schema{
+			"id": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "The identifier of the secret. Use it to manage it!",
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Name of the secret.",
 			},
-			"value": &schema.Schema{
+			"value": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The value of the secret. It will be available only when retrieving a single secret.",
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The type of the secret. It will be available only when retrieving secrets, following types are allowed: `ssh`, `password`.",

@@ -27,9 +27,9 @@ func TestAccContaboDnsZoneAndRecords(t *testing.T) {
 	zoneName := testAccDnsZoneName(t)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckDnsZoneDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckDnsZoneDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDnsZoneAndRecordsConfig(zoneName, 300, "1.1.1.1", "v=spf1 -all"),

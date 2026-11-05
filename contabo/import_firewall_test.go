@@ -10,9 +10,9 @@ const resourceName = "contabo_firewall.import"
 
 func TestContaboFirewallImport(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckFirewallDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckFirewallDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config:             testCheckContaboFirewallConfigImport(),

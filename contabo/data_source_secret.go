@@ -15,34 +15,34 @@ func dataSourceSecret() *schema.Resource {
 		Description: "The Secret Management API allows you to store and manage your passwords and ssh-keys. Usage of the Secret Management API is purely optional. As a convenience feature e.g. it allows you to reuse SSH-keys easily.",
 		ReadContext: dataSourceSecretRead,
 		Schema: map[string]*schema.Schema{
-			"created_at": &schema.Schema{
+			"created_at": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
 				Description: "The creation date of the secret.",
 			},
-			"updated_at": &schema.Schema{
+			"updated_at": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
 				Description: "Last updated time of the secret.",
 			},
-			"id": &schema.Schema{
+			"id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The identifier of the secret. Use it to manage it!",
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:        schema.TypeString,
 				Description: "Name of the secret.",
 				Computed:    true,
 			},
-			"value": &schema.Schema{
+			"value": {
 				Type:        schema.TypeString,
 				Description: "The value of the secret. It will be available only when retrieving a single secret.",
 				Computed:    true,
 			},
-			"type": &schema.Schema{
+			"type": {
 				Type:        schema.TypeString,
 				Description: "The type of the secret. It will be available only when retrieving secrets, following types are allowed: `ssh`, `password`.",
 				Computed:    true,

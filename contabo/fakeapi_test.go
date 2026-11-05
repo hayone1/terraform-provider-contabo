@@ -112,7 +112,9 @@ provider "contabo" {
 
 func testProviderFactories() map[string]func() (*schema.Provider, error) {
 	return map[string]func() (*schema.Provider, error){
-		"contabo": func() (*schema.Provider, error) { return Provider(), nil },
+		// Acceptance test checks read testAccProvider.Meta(), so every test
+		// uses the shared provider instance.
+		"contabo": func() (*schema.Provider, error) { return testAccProvider, nil },
 	}
 }
 
@@ -241,12 +243,6 @@ func (f *fakeAPI) instance(id int64) map[string]interface{} {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	return copyMap(f.instances[id])
-}
-
-func (f *fakeAPI) setInstanceField(id int64, key string, value interface{}) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.instances[id][key] = value
 }
 
 func (f *fakeAPI) routes() {

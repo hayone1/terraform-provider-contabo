@@ -429,7 +429,10 @@ func resourcePrivateNetworkDelete(
 	}
 
 	for _, i := range readRes.Data[0].Instances {
-		client.PrivateNetworksApi.UnassignInstancePrivateNetwork(ctx, privateNetworkId, i.InstanceId).XRequestId(uuid.NewV4().String()).Execute()
+		_, httpResp, err := client.PrivateNetworksApi.UnassignInstancePrivateNetwork(ctx, privateNetworkId, i.InstanceId).XRequestId(uuid.NewV4().String()).Execute()
+		if err != nil && !isNotFound(httpResp) {
+			return apiErrorDiags(httpResp, err)
+		}
 	}
 
 	httpResp, err = client.PrivateNetworksApi.

@@ -27,7 +27,7 @@ func resourceImage() *schema.Resource {
 			Create: schema.DefaultTimeout(60 * time.Minute),
 		},
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"id": {

@@ -24,9 +24,9 @@ func TestAccContaboPtrRecordIPv6(t *testing.T) {
 	canonicalIp := net.ParseIP(ipAddress).String()
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckPtrRecordDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckPtrRecordDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccPtrRecordConfig(ipAddress, "ptr-test-1.example.com.", "ttl = 3600"),
@@ -63,8 +63,8 @@ func TestAccContaboPtrRecordIPv4(t *testing.T) {
 	var originalPtr string
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
 		CheckDestroy: func(s *terraform.State) error {
 			// IPv4 PTR records are not deleted on destroy, restore the original value.
 			if originalPtr == "" {

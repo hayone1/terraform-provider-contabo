@@ -16,9 +16,9 @@ var secretName = (uuid.New()).String()
 
 func TestAccContaboSecretBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckSecretDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testProviderFactories(),
+		CheckDestroy:      testAccCheckSecretDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testCheckContaboSecretConfigBasic(),
