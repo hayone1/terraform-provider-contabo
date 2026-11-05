@@ -1,6 +1,7 @@
 package contabo
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -320,4 +321,21 @@ func replaceOnce(s, old, new string) string {
 		}
 	}
 	return s
+}
+
+func TestInstanceStateUpgradeV0(t *testing.T) {
+	state, err := resourceInstanceStateUpgradeV0(context.Background(), map[string]interface{}{"id": "1"}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if state["cancel_on_destroy"] != true {
+		t.Fatalf("cancel_on_destroy not defaulted: %v", state)
+	}
+	state, _ = resourceInstanceStateUpgradeV0(context.Background(), map[string]interface{}{"cancel_on_destroy": false}, nil)
+	if state["cancel_on_destroy"] != false {
+		t.Fatalf("existing value overwritten: %v", state)
+	}
+	if !resourceInstanceV0Type().IsObjectType() {
+		t.Fatal("v0 type is not an object")
+	}
 }

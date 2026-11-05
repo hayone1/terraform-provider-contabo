@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"contabo.com/openapi"
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -87,206 +88,245 @@ func resourceInstance() *schema.Resource {
 		DeleteContext: resourceInstanceDelete,
 		CustomizeDiff: resourceInstanceCustomizeDiff,
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: resourceInstanceImport,
+		},
+		// Version 1 adds cancel_on_destroy. States written by the official
+		// provider or earlier versions of this one have no value for it.
+		SchemaVersion: 1,
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Version: 0,
+				Type:    resourceInstanceV0Type(),
+				Upgrade: resourceInstanceStateUpgradeV0,
+			},
 		},
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(60 * time.Minute),
 			Update: schema.DefaultTimeout(60 * time.Minute),
 			Delete: schema.DefaultTimeout(10 * time.Minute),
 		},
-		Schema: map[string]*schema.Schema{
-			"id": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "The identifier of the compute instance. Use it to manage it!",
+		Schema: resourceInstanceSchema(),
+	}
+}
+
+func resourceInstanceSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The identifier of the compute instance. Use it to manage it!",
+		},
+		"existing_instance_id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Optional:    true,
+			Description: "Id of an existing instance to manage instead of ordering a new one. The provider adopts the instance as it is: it applies `display_name` and add-ons but does not reinstall it on create. Changes to reinstall attributes on later applies reinstall it as usual. Consider `terraform import` instead, and set `cancel_on_destroy = false` if destroying the resource should not cancel the instance.",
+		},
+		"cancel_on_destroy": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Default:     true,
+			Description: "Whether destroying the resource cancels the instance. When false, destroy only removes the instance from the Terraform state and the instance keeps running and billing. Defaults to `true`.",
+		},
+		"last_updated": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Time of the last update of the compute instance.",
+		},
+		"name": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Name of the compute instance.",
+		},
+		"display_name": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "The instance name chosen by the customer that will be shown in the customer panel.",
+		},
+		"image_id": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "CAUTION: On updating this value your server will be reinstalled! Image Id is used to set up the compute instance. Defaults to the API's default image. Find image ids with the `contabo_image` data source, the [API](https://api.contabo.com/#tag/Images/operation/retrieveImage) or `cntb get images`.",
+		},
+		"region": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "Region of the instance, for example `EU`, `UK`, `US-central`, `US-east`, `US-west`, `SIN`, `AUS`, `JPN` or `IND`. Defaults to `EU`. Cannot be changed after creation.",
+		},
+		"region_name": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Name of the region.",
+		},
+		"data_center": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Data center of the instance.",
+		},
+		"product_id": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "Product of the instance, for example `V153`. See the [API documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for current products. Cannot be changed through the API after creation: upgrade in the customer control panel, then set the new product id.",
+		},
+		"product_name": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Name of the product.",
+		},
+		"ip_config": instanceIpConfigSchema(),
+		"mac_address": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Mac address of the instance.",
+		},
+		"ram_mb": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "Image ram size in megabyte.",
+		},
+		"cpu_cores": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "CPU core count of the instance.",
+		},
+		"disk_mb": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "Image disk size of the instance in megabyte.",
+		},
+		"os_type": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Type of operating system (OS) installed on the instance.",
+		},
+		"ssh_keys": {
+			Computed: true,
+			Optional: true,
+			Type:     schema.TypeList,
+			Elem: &schema.Schema{
+				Type: schema.TypeInt,
 			},
-			"existing_instance_id": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Optional:    true,
-				Description: "Id of an existing instance to manage instead of ordering a new one. The provider adopts the instance as it is: it applies `display_name` and add-ons but does not reinstall it on create. Changes to reinstall attributes on later applies reinstall it as usual. Consider `terraform import` instead, and set `cancel_on_destroy = false` if destroying the resource should not cancel the instance.",
-			},
-			"cancel_on_destroy": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "Whether destroying the resource cancels the instance. When false, destroy only removes the instance from the Terraform state and the instance keeps running and billing. Defaults to `true`.",
-			},
-			"last_updated": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Time of the last update of the compute instance.",
-			},
-			"name": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Name of the compute instance.",
-			},
-			"display_name": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "The instance name chosen by the customer that will be shown in the customer panel.",
-			},
-			"image_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "CAUTION: On updating this value your server will be reinstalled! Image Id is used to set up the compute instance. Defaults to the API's default image. Find image ids with the `contabo_image` data source, the [API](https://api.contabo.com/#tag/Images/operation/retrieveImage) or `cntb get images`.",
-			},
-			"region": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "Region of the instance, for example `EU`, `UK`, `US-central`, `US-east`, `US-west`, `SIN`, `AUS`, `JPN` or `IND`. Defaults to `EU`. Cannot be changed after creation.",
-			},
-			"region_name": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Name of the region.",
-			},
-			"data_center": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Data center of the instance.",
-			},
-			"product_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "Product of the instance, for example `V153`. See the [API documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for current products. Cannot be changed through the API after creation: upgrade in the customer control panel, then set the new product id.",
-			},
-			"product_name": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Name of the product.",
-			},
-			"ip_config": instanceIpConfigSchema(),
-			"mac_address": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Mac address of the instance.",
-			},
-			"ram_mb": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "Image ram size in megabyte.",
-			},
-			"cpu_cores": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "CPU core count of the instance.",
-			},
-			"disk_mb": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "Image disk size of the instance in megabyte.",
-			},
-			"os_type": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Type of operating system (OS) installed on the instance.",
-			},
-			"ssh_keys": {
-				Computed: true,
-				Optional: true,
-				Type:     schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeInt,
-				},
-				Description: "CAUTION: On updating this value your server will be reinstalled! Array of `secretIds` of public SSH keys for logging into as defaultUser with administrator/root privileges. Applies to Linux/BSD systems. Please refer to Secrets Management API.",
-			},
-			"root_password": {
-				Optional:    true,
-				Type:        schema.TypeInt,
-				Description: "CAUTION: On updating this value your server will be reinstalled! Secret id of the root password of the compute instance.",
-			},
-			"created_date": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "The creation date of the compute instance.",
-			},
-			"cancel_date": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "The date on which the instance will be cancelled. Read only in practice: setting it has no effect.",
-			},
-			"status": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Status of the compute instance, for example `provisioning`, `installing`, `running`, `stopped`, `error` or `uninstalled`.",
-			},
-			"v_host_id": {
-				Type:        schema.TypeInt,
-				Computed:    true,
-				Description: "Identifier of the host system.",
-			},
-			"add_ons": {
-				Type:        schema.TypeList,
-				Computed:    true,
-				Optional:    true,
-				Description: "Add-ons of the instance. On create, every listed add-on is ordered with the instance. On existing instances, adding private networking (`1477`) or automated backup (`2214`) orders it through the upgrade API; other add-ons can only be ordered with the instance or in the customer control panel, and removing add-ons has no effect. When set, the state lists only the configured add-ons; the `contabo_instance` data source lists all of them.",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Optional:    true,
-							Description: "Id of the Addon. Please refer to list [here](https://contabo.com/en/product-list/?show_ids=true).",
-						},
-						"quantity": {
-							Type:        schema.TypeInt,
-							Computed:    true,
-							Optional:    true,
-							Description: "The number of Addons you wish to aquire.",
-						},
+			Description: "CAUTION: On updating this value your server will be reinstalled! Array of `secretIds` of public SSH keys for logging into as defaultUser with administrator/root privileges. Applies to Linux/BSD systems. Please refer to Secrets Management API.",
+		},
+		"root_password": {
+			Optional:    true,
+			Type:        schema.TypeInt,
+			Description: "CAUTION: On updating this value your server will be reinstalled! Secret id of the root password of the compute instance.",
+		},
+		"created_date": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "The creation date of the compute instance.",
+		},
+		"cancel_date": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "The date on which the instance will be cancelled. Read only in practice: setting it has no effect.",
+		},
+		"status": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Status of the compute instance, for example `provisioning`, `installing`, `running`, `stopped`, `error` or `uninstalled`.",
+		},
+		"v_host_id": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "Identifier of the host system.",
+		},
+		"add_ons": {
+			Type:        schema.TypeList,
+			Computed:    true,
+			Optional:    true,
+			Description: "Add-ons of the instance. On create, every listed add-on is ordered with the instance. On existing instances, adding private networking (`1477`) or automated backup (`2214`) orders it through the upgrade API; other add-ons can only be ordered with the instance or in the customer control panel, and removing add-ons has no effect. When set, the state lists only the configured add-ons; the `contabo_instance` data source lists all of them.",
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"id": {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Optional:    true,
+						Description: "Id of the Addon. Please refer to list [here](https://contabo.com/en/product-list/?show_ids=true).",
+					},
+					"quantity": {
+						Type:        schema.TypeInt,
+						Computed:    true,
+						Optional:    true,
+						Description: "The number of Addons you wish to aquire.",
 					},
 				},
 			},
-			"error_message": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "If the instance is in an error state (see status property), the error message can be seen in this field.",
-			},
-			"product_type": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "Instance's category depending on Product Id, for example `ssd`, `nvme` or `vds`.",
-			},
-			"user_data": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "CAUTION: On updating this value your server will be reinstalled! Cloud-Init Config in order to customize during start of compute instance. The API does not return it, so changes made outside Terraform are not detected.",
-			},
-			"license": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "Additional license in order to enhance your chosen product. It is mainly needed for software licenses on your product (not needed for windows). See our [api documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for all available licenses. Only used on create.",
-			},
-			"default_user": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Computed:     true,
-				ValidateFunc: validation.StringInSlice([]string{"root", "admin", "administrator"}, false),
-				Description:  "CAUTION: On updating this value your server will be reinstalled! Default user name created for login during (re-)installation with administrative privileges. Allowed values for Linux/BSD are admin (use sudo to apply administrative privileges like root) or root. Allowed values for Windows are admin (has administrative privileges like administrator) or administrator.",
-			},
-			"application_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: "CAUTION: On updating this value your server will be reinstalled! Id of an application to install with the image.",
-			},
-			"period": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Computed:    true,
-				Description: "Initial contract period in months, for example 1, 3, 6 or 12. The default setting is 1 month. Only used on create.",
-			},
-			"additional_ips": instanceAdditionalIpsSchema(),
 		},
+		"error_message": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "If the instance is in an error state (see status property), the error message can be seen in this field.",
+		},
+		"product_type": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Instance's category depending on Product Id, for example `ssd`, `nvme` or `vds`.",
+		},
+		"user_data": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "CAUTION: On updating this value your server will be reinstalled! Cloud-Init Config in order to customize during start of compute instance. The API does not return it, so changes made outside Terraform are not detected.",
+		},
+		"license": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "Additional license in order to enhance your chosen product. It is mainly needed for software licenses on your product (not needed for windows). See our [api documentation](https://api.contabo.com/#tag/Instances/operation/createInstance) for all available licenses. Only used on create.",
+		},
+		"default_user": {
+			Type:         schema.TypeString,
+			Optional:     true,
+			Computed:     true,
+			ValidateFunc: validation.StringInSlice([]string{"root", "admin", "administrator"}, false),
+			Description:  "CAUTION: On updating this value your server will be reinstalled! Default user name created for login during (re-)installation with administrative privileges. Allowed values for Linux/BSD are admin (use sudo to apply administrative privileges like root) or root. Allowed values for Windows are admin (has administrative privileges like administrator) or administrator.",
+		},
+		"application_id": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "CAUTION: On updating this value your server will be reinstalled! Id of an application to install with the image.",
+		},
+		"period": {
+			Type:        schema.TypeInt,
+			Optional:    true,
+			Computed:    true,
+			Description: "Initial contract period in months, for example 1, 3, 6 or 12. The default setting is 1 month. Only used on create.",
+		},
+		"additional_ips": instanceAdditionalIpsSchema(),
 	}
+}
+
+func resourceInstanceImport(ctx context.Context, d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+	if err := d.Set("cancel_on_destroy", true); err != nil {
+		return nil, err
+	}
+	return []*schema.ResourceData{d}, nil
+}
+
+// resourceInstanceV0Type is the schema of version 0. The upgrader only adds
+// an attribute, so the current schema without it describes version 0.
+func resourceInstanceV0Type() cty.Type {
+	v0 := resourceInstanceSchema()
+	delete(v0, "cancel_on_destroy")
+	return (&schema.Resource{Schema: v0}).CoreConfigSchema().ImpliedType()
+}
+
+func resourceInstanceStateUpgradeV0(ctx context.Context, rawState map[string]interface{}, meta interface{}) (map[string]interface{}, error) {
+	if rawState == nil {
+		rawState = map[string]interface{}{}
+	}
+	if _, ok := rawState["cancel_on_destroy"]; !ok {
+		rawState["cancel_on_destroy"] = true
+	}
+	return rawState, nil
 }
 
 func resourceInstanceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -392,7 +432,7 @@ func resourceInstanceRead(ctx context.Context, d *schema.ResourceData, m interfa
 	if instance.ApplicationId != nil && *instance.ApplicationId != "" {
 		values["application_id"] = *instance.ApplicationId
 	}
-	return setSchemaValues(d, resourceInstance().Schema, values)
+	return setSchemaValues(d, resourceInstanceSchema(), values)
 }
 
 func resourceInstanceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
