@@ -25,13 +25,13 @@ func dataSourceObjectStorageBucket() *schema.Resource {
 			},
 			"public_sharing": {
 				Type:        schema.TypeBool,
-				Description: "Choose the access to your bucket. You can not share it at all or share it publicly.",
-				Default:     false,
+				Description: "Whether the bucket is shared publicly. The data source reads the value from the bucket policy. A value in the configuration is ignored; the setting only stays optional for compatibility.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"public_sharing_link": {
 				Type:        schema.TypeString,
-				Description: "If your bucket is publicly shared, you can access it with this link.",
+				Description: "The public address of the bucket, `<s3 url>/<s3 tenant id>:<bucket>`. The value is empty when the bucket is not shared publicly.",
 				Computed:    true,
 			},
 			"creation_date": {
@@ -54,21 +54,43 @@ func dataSourceObjectStorageBucketRead(
 	objectStorageIdOfBucket := d.Get("object_storage_id").(string)
 
 	diags, objectStorage, s3Credentials := getObjectStorageAndCredentials(diags, client, objectStorageIdOfBucket)
+	if diags.HasError() {
+		return diags
+	}
 
 	diags, bucketInfo, err := getBucket(diags, objectStorage, s3Credentials, bucketName)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	isPublicSharing := d.Get("public_sharing").(bool)
-	publicSharingLink := d.Get("public_sharing_link").(string)
-
-	bucket := Bucket{
-		bucketName,
-		objectStorageIdOfBucket,
-		objectStorage.S3TenantId,
-		bucketInfo.CreationDate,
-		isPublicSharing,
-		publicSharingLink,
+	if bucketInfo.Name == "" {
+		return diag.Errorf("the bucket %q does not exist in the object storage %s", bucketName, objectStorageIdOfBucket)
 	}
-	return AddObjectStorageBucketToData(bucket, d, diags)
+
+	// Read the real sharing state. Earlier versions returned the configured
+	// value and an empty link instead.
+	diags, isPublicSharing, err := isBucketPublicSharing(diags, objectStorage, s3Credentials, bucketName)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	publicSharingLink := ""
+	if isPublicSharing {
+		publicSharingLink = generatePublicSharingUrl(objectStorage, bucketName)
+	}
+
+	// The shared AddObjectStorageBucketToData helper sets an "id" attribute,
+	// which only the resource schema has, so the data source sets its values
+	// itself.
+	d.SetId(generateBucketId(objectStorageIdOfBucket, bucketName))
+	for name, value := range map[string]interface{}{
+		"name":                bucketName,
+		"object_storage_id":   objectStorageIdOfBucket,
+		"creation_date":       bucketInfo.CreationDate.String(),
+		"public_sharing":      isPublicSharing,
+		"public_sharing_link": publicSharingLink,
+	} {
+		if err := d.Set(name, value); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	return diags
 }

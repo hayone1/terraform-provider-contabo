@@ -62,6 +62,7 @@ func Provider() *schema.Provider {
 			"contabo_firewall":              resourceFirewall(),
 			"contabo_private_network":       resourcePrivateNetwork(),
 			"contabo_object_storage_bucket": resourceObjectStorageBucket(),
+			"contabo_object_storage_object": resourceObjectStorageObject(),
 			"contabo_tag":                   resourceTag(),
 			"contabo_tag_assignment":        resourceTagAssignment(),
 			"contabo_instance_reinstall":    resourceInstanceReinstall(),
@@ -96,6 +97,7 @@ func Provider() *schema.Provider {
 			"contabo_role":                        dataSourceRole(),
 			"contabo_api_permissions":             dataSourceApiPermissions(),
 			"contabo_users":                       dataSourceUsers(),
+			"contabo_kubernetes_oidc_documents":   dataSourceKubernetesOidcDocuments(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
