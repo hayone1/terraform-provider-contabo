@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-// The data source failed with "instances.0.instance_id: '' expected type
+// The data source failed with "instances.0.instance_id: ” expected type
 // 'string', got unconvertible type 'int64'" for every network with members.
 func TestUnitPrivateNetworkDataSourceWithInstances(t *testing.T) {
 	api := newFakeAPI(t)
