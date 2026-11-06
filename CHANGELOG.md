@@ -2,6 +2,18 @@
 
 This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
+## v0.3.3 (2026-11-06)
+
+This release is based on version `v0.1.44` of the official provider. This release fixes the `contabo_private_network` data source.
+
+### Fixes
+
+- The `contabo_private_network` data source failed on every network that had members. The error was `instances.0.instance_id: '' expected type 'string', got unconvertible type 'int64'`. The schema declared `instances.instance_id` as a string, but the provider wrote a number. The attribute is now a number, as in the `contabo_private_network` resource.
+
+### Things to know
+
+- Configurations that compare `instances[*].instance_id` of the data source with a string need `tostring()` now. Earlier versions never returned a value, because every read failed.
+
 ## v0.3.2 (2026-11-06)
 
 This release is based on version `v0.1.44` of the official provider. This release changes no code.

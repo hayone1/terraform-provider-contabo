@@ -63,7 +63,7 @@ Read-Only:
 
 - `display_name` (String)
 - `error_message` (String)
-- `instance_id` (String)
+- `instance_id` (Number)
 - `name` (String)
 - `private_ip_config` (List of Object) (see [below for nested schema](#nestedobjatt--instances--private_ip_config))
 - `status` (String)
