@@ -54,7 +54,7 @@ func dataSourcePrivateNetwork() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"instance_id": {
-							Type:        schema.TypeString,
+							Type:        schema.TypeInt,
 							Computed:    true,
 							Description: "The identifier of the compute instance.",
 						},
