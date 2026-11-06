@@ -2,6 +2,20 @@
 
 This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
+## v0.3.1 (2026-11-06)
+
+This release is based on version `v0.1.44` of the official provider. This release fixes the `contabo_object_storage_bucket` resource.
+
+### Fixes
+
+- An update of a `contabo_object_storage_bucket` resource turned public sharing off when the update did not change `public_sharing`. A change of `name` or `object_storage_id` started such an update, so the old bucket became private, and the update then failed. A public bucket that serves a Kubernetes service account issuer stopped working in this way.
+- A change of `name` or `object_storage_id` now replaces the bucket. Contabo cannot rename a bucket or move a bucket to another object storage.
+- A change of `public_sharing` now shows `public_sharing_link` as unknown in the plan. Earlier versions kept the old link in the plan, and the next plan showed the new link as a change.
+
+### Things to know
+
+- Terraform deletes the old bucket when it replaces the bucket. Remove the old bucket from the state with `terraform state rm` before the change if the old bucket must stay online, for example during the move of a Kubernetes service account issuer.
+
 ## v0.3.0 (2026-11-05)
 
 This release is based on version `v0.1.44` of the official provider. This release adds what a Kubernetes cluster on Contabo needs for workload identity: a public bucket can now act as the service account issuer of the cluster.

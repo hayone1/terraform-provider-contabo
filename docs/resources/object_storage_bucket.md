@@ -39,8 +39,8 @@ resource "contabo_object_storage_bucket" "example_bucket" {
 
 ### Required
 
-- `name` (String) The name of your bucket, consider the naming restriction https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-s3-bucket-naming-requirements.html.
-- `object_storage_id` (String) The contabo objectStorageId on which the bucket should be created.
+- `name` (String) The name of your bucket, consider the naming restriction https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-s3-bucket-naming-requirements.html. A new name replaces the bucket.
+- `object_storage_id` (String) The contabo objectStorageId on which the bucket should be created. A new object storage replaces the bucket.
 
 ### Optional
 
