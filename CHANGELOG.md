@@ -2,6 +2,14 @@
 
 This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
+## v0.3.2 (2026-11-06)
+
+This release is based on version `v0.1.44` of the official provider. This release changes no code.
+
+### Fixes
+
+- The OpenTofu Registry did not show the documentation of the provider. The documentation page answered "451 Unavailable for Legal Reasons". The license detector of the registry found the MIT license with a confidence of only 97.5 percent, because the file `LICENSE` had no title and an unusual form of the copyright lines. The registry then also listed a similar license that the OpenTofu project does not allow. The file `LICENSE` now has the standard form of the MIT license, and the detector finds the MIT license with a confidence of 100 percent. The license itself did not change.
+
 ## v0.3.1 (2026-11-06)
 
 This release is based on version `v0.1.44` of the official provider. This release fixes the `contabo_object_storage_bucket` resource.

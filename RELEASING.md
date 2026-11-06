@@ -123,6 +123,8 @@ The OpenTofu Registry adds providers through GitHub issues. Use the web form on 
 
 The OpenTofu team or their automation processes the issues. The registry then picks up new releases automatically.
 
+The OpenTofu Registry shows the documentation of a release only when the registry recognizes the license of the release. The registry scans the file `LICENSE` with a license detector. The detector must find the MIT license with a confidence of at least 98 percent. Otherwise the registry also lists similar licenses that the OpenTofu project does not allow, and the documentation page answers "451 Unavailable for Legal Reasons". Keep the file `LICENSE` in the standard form of the MIT license: the title `MIT License`, the copyright lines in the form `Copyright (c) <year> <name>`, and the license text without changes. The registry checks every release on its own, so a fix of the file only helps the next release.
+
 ### Step 10: Check the published provider
 
 Create an empty folder with a file `main.tf` and this content:
