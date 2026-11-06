@@ -80,3 +80,24 @@ func TestResourceObjectStorageBucketImportIdValidation(t *testing.T) {
 		})
 	}
 }
+
+// A changed name or object storage must create a new bucket. An in-place
+// update cannot rename a bucket, and older versions turned public sharing off
+// on the old bucket during such an update.
+func TestResourceObjectStorageBucketForceNew(t *testing.T) {
+	s := resourceObjectStorageBucket().Schema
+	for _, name := range []string{"name", "object_storage_id"} {
+		if !s[name].ForceNew {
+			t.Errorf("%s must force a new bucket", name)
+		}
+	}
+	if s["public_sharing"].ForceNew {
+		t.Error("public_sharing must change in place")
+	}
+}
+
+func TestResourceObjectStorageBucketHasCustomizeDiff(t *testing.T) {
+	if resourceObjectStorageBucket().CustomizeDiff == nil {
+		t.Error("public_sharing_link must become unknown when public_sharing changes")
+	}
+}

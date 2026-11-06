@@ -42,6 +42,14 @@ func resourceObjectStorageBucket() *schema.Resource {
 		ReadContext:   resourceObjectStorageBucketRead,
 		UpdateContext: resourceObjectStorageBucketUpdate,
 		DeleteContext: resourceObjectStorageBucketDelete,
+		// The link changes with public_sharing. Without this, the plan keeps the
+		// old link, and Terraform reports the new link as drift after the apply.
+		CustomizeDiff: func(_ context.Context, diff *schema.ResourceDiff, _ interface{}) error {
+			if diff.HasChange("public_sharing") {
+				return diff.SetNewComputed("public_sharing_link")
+			}
+			return nil
+		},
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceObjectStorageBucketImport,
 		},
@@ -54,12 +62,14 @@ func resourceObjectStorageBucket() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The name of your bucket, consider the naming restriction https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-s3-bucket-naming-requirements.html.",
+				ForceNew:    true,
+				Description: "The name of your bucket, consider the naming restriction https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-s3-bucket-naming-requirements.html. A new name replaces the bucket.",
 			},
 			"object_storage_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The contabo objectStorageId on which the bucket should be created.",
+				ForceNew:    true,
+				Description: "The contabo objectStorageId on which the bucket should be created. A new object storage replaces the bucket.",
 			},
 			"public_sharing": {
 				Type:        schema.TypeBool,
@@ -441,21 +451,22 @@ func resourceObjectStorageBucketUpdate(
 		return diag.FromErr(err)
 	}
 
-	var publicSharingLink string
-	isPublicSharing := false
+	// Only public_sharing can change in place. name and object_storage_id
+	// force a new bucket. Earlier versions turned public sharing off on every
+	// update that did not change public_sharing.
+	isPublicSharing := data.Get("public_sharing").(bool)
+	publicSharingLink := data.Get("public_sharing_link").(string)
 
 	if data.HasChange("public_sharing") {
-		isPublicSharing = data.Get("public_sharing").(bool)
-	}
-
-	if isPublicSharing {
-		diags, publicSharingLink, err = enablePublicSharing(diags, objectStorage, s3Credentials, bucketName)
-		if err != nil {
-			return diag.FromErr(err)
+		if isPublicSharing {
+			diags, publicSharingLink, err = enablePublicSharing(diags, objectStorage, s3Credentials, bucketName)
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		} else {
+			diags = disablePublicSharing(diags, objectStorage, s3Credentials, bucketName)
+			publicSharingLink = ""
 		}
-	} else {
-		diags = disablePublicSharing(diags, objectStorage, s3Credentials, bucketName)
-		publicSharingLink = ""
 	}
 
 	bucket := Bucket{
