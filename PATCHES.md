@@ -44,6 +44,7 @@ The pull requests #60 to #64 in the official repository come from the contrib fo
 | 27 | The patch fixes the `contabo_object_storage_bucket` data source. The data source failed on every read, returned the configured `public_sharing` value instead of the real one, returned an empty `public_sharing_link`, and did not report a missing bucket. | `patch/object-storage-object` | None yet. | carried | v0.3.0 |
 | 28 | The patch fixes the `contabo_object_storage_bucket` resource. An update that did not change `public_sharing` turned public sharing off, and a new `name` or `object_storage_id` started an update that could not succeed. A new `name` or `object_storage_id` now replaces the bucket. | `patch/bucket-update-keeps-sharing` | None yet. | carried | v0.3.1 |
 | 29 | The patch fixes the `contabo_private_network` data source. The data source failed with "expected type 'string', got unconvertible type 'int64'" for every network with members, because the schema declared `instances.instance_id` as a string. The attribute is now a number, as in the resource. | `fix/private-network-data-source-instance-id` | None yet. | carried | v0.3.3 |
+| 30 | The patch adds the `contabo_instance_restart` resource. The resource restarts an instance through the API whenever its triggers change, also when the operating system of the instance no longer responds. | `feature/instance-restart` | None yet. | carried | v0.3.4 |
 
 ## How to update the distribution from the official provider
 

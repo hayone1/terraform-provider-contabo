@@ -2,6 +2,14 @@
 
 This file lists every release of the `hayone1/contabo` distribution. The version numbers of the distribution do not follow the version numbers of the official provider. Each release names the version of the official provider that the release is based on.
 
+## v0.3.4 (2026-11-06)
+
+This release is based on version `v0.1.44` of the official provider. This release adds a resource that restarts an instance.
+
+### New resources
+
+- `contabo_instance_restart` restarts an instance through the Contabo API when Terraform creates the resource, and again whenever a value in `triggers` changes. The provider waits until the instance runs again. The restart also works when the operating system of the instance no longer responds, for example after a script wrote a new disk image over the running system. Destroying the resource does nothing to the instance.
+
 ## v0.3.3 (2026-11-06)
 
 This release is based on version `v0.1.44` of the official provider. This release fixes the `contabo_private_network` data source.
