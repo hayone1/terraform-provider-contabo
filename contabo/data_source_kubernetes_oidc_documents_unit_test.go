@@ -1,6 +1,7 @@
 package contabo
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -109,6 +110,10 @@ func TestKubernetesOidcDocumentsEcdsaAndRotation(t *testing.T) {
 	x, _ := base64.RawURLEncoding.DecodeString(jwks.Keys[0]["x"])
 	if jwks.Keys[0]["crv"] != "P-256" || len(x) != 32 {
 		t.Errorf("unexpected EC key: %v", jwks.Keys[0])
+	}
+	y, _ := base64.RawURLEncoding.DecodeString(jwks.Keys[0]["y"])
+	if want, _ := ec.PublicKey.Bytes(); !bytes.Equal(append(append([]byte{4}, x...), y...), want) {
+		t.Errorf("the EC key's x and y don't match the public key: %v", jwks.Keys[0])
 	}
 }
 
