@@ -169,13 +169,6 @@ func kubernetesKeyId(publicKey crypto.PublicKey) (string, error) {
 	return base64Url(sum[:]), nil
 }
 
-func paddedCoordinate(value *big.Int, curve elliptic.Curve) []byte {
-	size := (curve.Params().BitSize + 7) / 8
-	out := make([]byte, size)
-	value.FillBytes(out)
-	return out
-}
-
 func jsonWebKeyFor(publicKey crypto.PublicKey) (jsonWebKey, error) {
 	kid, err := kubernetesKeyId(publicKey)
 	if err != nil {
@@ -200,10 +193,17 @@ func jsonWebKeyFor(publicKey crypto.PublicKey) (jsonWebKey, error) {
 		default:
 			return jsonWebKey{}, fmt.Errorf("the elliptic curve %s is not supported", key.Curve.Params().Name)
 		}
+		// Bytes returns the uncompressed point: 0x04, then X and Y, each padded
+		// to the curve size, which is the form JWK wants.
+		point, err := key.Bytes()
+		if err != nil {
+			return jsonWebKey{}, fmt.Errorf("the ECDSA key is not valid: %w", err)
+		}
+		size := (len(point) - 1) / 2
 		return jsonWebKey{
 			Use: "sig", Kty: "EC", Kid: kid, Crv: crv, Alg: alg,
-			X: base64Url(paddedCoordinate(key.X, key.Curve)),
-			Y: base64Url(paddedCoordinate(key.Y, key.Curve)),
+			X: base64Url(point[1 : 1+size]),
+			Y: base64Url(point[1+size:]),
 		}, nil
 	}
 	return jsonWebKey{}, fmt.Errorf("the key type %T is not supported; use an RSA or an ECDSA key", publicKey)
