@@ -10,7 +10,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.42
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/satori/go.uuid v1.2.0
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.1
 	golang.org/x/oauth2 v0.36.0
 )
 
